@@ -13,6 +13,10 @@ NAME=$1
 PROFILE_PATH="$SA_PROFILE_PATH/$name"
 mkdir $PROFILE_PATH
 
+if ! command -v curl >/dev/null 2>&1; then
+    sudo apt install curl
+fi
+
 if ! command -v conda >/dev/null 2>&1; then
     echo "Anaconda not installed. Installing..."
 
@@ -61,6 +65,8 @@ cd $RESEARCH_PATH
 protoc "$OBJECT_DETECTION_PATH/protos/*.proto" --python_out=.
 cp "$OBJECT_DETECTION_PATH/packages/tf2/setup.py" .
 python -m pip install .
+
+
 
 
 

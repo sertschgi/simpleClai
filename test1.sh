@@ -10,7 +10,7 @@ OBJECT_DETECTION_PATH="$RESEARCH_PATH/object_detection"
 
 NAME=$1
 
-PROFILE_PATH = "$SA_PROFILE_PATH/$name"
+PROFILE_PATH="$SA_PROFILE_PATH/$name"
 mkdir $PROFILE_PATH
 
 if ! command -v conda >/dev/null 2>&1; then
@@ -61,4 +61,6 @@ cd $RESEARCH_PATH
 protoc "$OBJECT_DETECTION_PATH/protos/*.proto" --python_out=.
 cp "$OBJECT_DETECTION_PATH/packages/tf2/setup.py" .
 python -m pip install .
+
+
 

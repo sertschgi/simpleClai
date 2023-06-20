@@ -10,7 +10,7 @@ OBJECT_DETECTION_PATH="$RESEARCH_PATH/object_detection"
 
 NAME=$1
 
-PROFILE_PATH="$SA_PROFILE_PATH/$name"
+PROFILE_PATH="$SA_PROFILE_PATH/$NAME"
 mkdir $PROFILE_PATH
 
 if ! command -v curl >/dev/null 2>&1; then

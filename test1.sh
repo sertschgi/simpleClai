@@ -24,7 +24,7 @@ if ! command -v conda >/dev/null 2>&1; then
     INSTALL_DIR="/opt/anaconda" # <-- no permission to write -> elevated permissions
 
     curl -O "https://repo.anaconda.com/archive/$NEWEST"
-    bash $NEWEST -b -p $INSTALL_DIR
+    sudo bash $NEWEST -b -p $INSTALL_DIR
 
     echo "export PATH=$INSTALL_DIR/bin:$PATH" >> ~/.bashrc
 

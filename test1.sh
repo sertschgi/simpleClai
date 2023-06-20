@@ -22,8 +22,11 @@ if ! command -v conda >/dev/null 2>&1; then
 
     NEWEST="Anaconda3-$(curl -s https://repo.anaconda.com/archive/ | grep -Eo "Anaconda3-[0-9]+\.[0-9]+(-[0-9]+)?-Linux-x86_64\.sh" | grep -Eo "[0-9]+\.[0-9]+(-[0-9]+)?" | sort -rn | head -n 1)-Linux-x86_64.sh"
     INSTALL_DIR="/opt/anaconda" # <-- no permission to write -> elevated permissions
-
-    curl -O "https://repo.anaconda.com/archive/$NEWEST"
+    
+    if ! command -v cat $NEWEST >/dev/null 2>&1; then
+        curl -O "https://repo.anaconda.com/archive/$NEWEST"
+    fi
+    
     sudo bash $NEWEST -b -p $INSTALL_DIR
 
     echo "export PATH=$INSTALL_DIR/bin:$PATH" >> ~/.bashrc

@@ -1,0 +1,14 @@
+PROJECT_PATH=$1
+MODEL=$2
+MODEL_NAME=$3
+MODEL_URL=$4
+MODEL_PATH="$PROJECT_PATH/models/$MODEL_NAME"
+
+mkdir MODEL_PATH
+
+curl -O MODEL_URL $MODEL_PATH
+
+tar -xf model.tar.gz -C $MODEL_PATH
+
+
+

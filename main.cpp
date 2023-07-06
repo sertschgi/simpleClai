@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QDebug>
+#include <iostream>
 
 #include "./src/core/parser.h"
 
@@ -9,8 +10,6 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setApplicationName("SimpleCLai");
     QCoreApplication::setApplicationVersion("0.0.1");
-
-    qDebug() << "Test";
 
     clparser::parseArgs(a);
 

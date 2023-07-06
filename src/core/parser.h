@@ -9,7 +9,8 @@ namespace clparser
 
     void _checkRequiredOptions
         (
-        const QCommandLineParser& parser
+        QCommandLineParser& parser,
+        QList<QCommandLineOption>& optionsList
         );
 }
 

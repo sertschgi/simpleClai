@@ -16,179 +16,201 @@ void clparser::parseArgs
 {
     QCommandLineParser parser;
     parser.setApplicationDescription("SimpleClAi parser");
-
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption nameOption({"name", "n"}, "Specify a name");
+    parser.addPositionalArgument("command", "The command to execute.");
 
-    // create command
-    QCommandLineParser createParser;
-    createParser.setApplicationDescription("Create profile, project or model");
+    parser.parse(app.arguments());
 
-    // create profile
-    QCommandLineParser createProfileParser;
-    createProfileParser.setApplicationDescription("Profile option");
+    QStringList args = parser.positionalArguments();
+    QString command = args.isEmpty() ? QString() : args.first();
 
-    createProfileParser.addOption(nameOption);
-    createProfileParser.addOption({{"framework", "f"}, "Specify the framework."});
-    createProfileParser.addOption({{"scope", "s"}, "What you want to do with your framework."});
-
-    createParser.addOption({{"profile", "pf"}, "Create Profile"});
-    //createParser.addSubParser(&createProfileParser {"profile", "pf"});
-
-    // create project
-    QCommandLineParser createProjectParser;
-    createProjectParser.setApplicationDescription("Project option");
-
-    createProjectParser.addOption(nameOption);
-    createProjectParser.addOption({{"profile", "p"}, "Specify a profile."});
-    createProjectParser.addOption({{"dataset", "d"}, "Specify the dataset"});
-
-    createParser.addOption({{"project", "pj"}, "Create Project"});
-    //createParser.addSubParser(&createProjectParser {"project", "pj"});
-
-    // create model
-    QCommandLineParser createModelParser;
-    createModelParser.setApplicationDescription("Model option");
-
-    createProjectParser.addOption(nameOption);
-    createProjectParser.addOption({{"project", "p"}, "Specify a project."});
-    createProjectParser.addOption({{"model", "m"}, "Specify the model."});
-
-    createParser.addOption({{"model", "m"}, "Create Model"});
-    // createParser.addSubParser(&createModelParser {"model", "m"});
-
-    // create dataset
-    QCommandLineParser createDatasetParser;
-    createModelParser.setApplicationDescription("Dataset option");
-
-    createDatasetParser.addOption(nameOption);
-    createDatasetParser.addOption({{"labels", "l"}, "Specify the labels."});
-    createDatasetParser.addOption({{"labelpath", "lp"}, "Specify the label path."});
-    createDatasetParser.addOption({{"imagepath", "i"}, "Specify the images path."});
-
-    createParser.addOption({{"dataset", "d"}, "Create Dataset"});
-    //createParser.addSubParser(&createProjectParser, {"dataset", "d"});
-
-    parser.addOption({{"create", "c"}, "Create Command"});
-    //parser.addSubParser(&createParser, {"create", "c"});
-
-    // train command
-    QCommandLineParser trainParser;
-    trainParser.setApplicationDescription("Train your models");
-
-    trainParser.addOption({{"modelname", "n"}, "Specify the name of the model."});
-    trainParser.addOption({{"projectname", "n"}, "Specify the name of the project."});
-
-    parser.addOption({{"train", "t"}, "Train Command"});
-    //parser.addSubParser(&trainParser, {"train", "t"});
-
-    // list command
-    QCommandLineParser listParser;
-    listParser.setApplicationDescription("List your datasets, profiles and projects");
-
-    listParser.addOption({{"dataset", "d"}, "List your datasets"});
-    listParser.addOption({{"profile", "pf"}, "List your profiles"});
-    listParser.addOption({{"projects", "pj"}, "List your projects"});
-
-    parser.addOption({{"list", "l"}, "List Command"});
-    //parser.addSubParser(&listParser, {"list", "l"});
-
-    // process the args
-    parser.process(app);
-
-    if (parser.isSet("create"))
+    if (command == "create")
     {
-        createParser.process(app); // potential mistake: else use parser.value("create") instead of app
-        if (createParser.isSet("profile"))
+        parser.clearPositionalArguments();
+        parser.addPositionalArgument("create", "Create a project, profile, dataset or model.", "create ...");
+
+        parser.parse(QCoreApplication::arguments());
+
+        args = parser.positionalArguments();
+        command = args.isEmpty() ? QString() : args[1];
+
+        if (command == "dataset")
         {
-            createProfileParser.process(app); // same as line 102
-            clparser::_checkRequiredOptions(createParser);
-            profile::createProfile
-            (
-                createProfileParser.value(nameOption),
-                createProfileParser.value("scope"),
-                createProfileParser.value("framework")
-            );
-        }
-        else if (createParser.isSet("project"))
-        {
-            createProjectParser.process(app); // same as line 102
-            clparser::_checkRequiredOptions(createParser);
-            project::createProject
-            (
-                createProjectParser.value(nameOption),
-                createProjectParser.value("profile"),
-                createProjectParser.value("dataset")
-            );
-        }
-        else if (createParser.isSet("model"))
-        {
-            createModelParser.process(app); // same as line 102
-            clparser::_checkRequiredOptions(createParser);
-            model::createModel
-                (
-                    createModelParser.value(nameOption),
-                    createModelParser.value("project"),
-                    createModelParser.value("model")
-                );
-        }
-        else if (createParser.isSet("model"))
-        {
-            createDatasetParser.process(app); // same as line 102
-            clparser::_checkRequiredOptions(createParser);
+            parser.clearPositionalArguments();
+            parser.addPositionalArgument("dataset", "Create a dataset.", "create dataset ...");
+
+            QCommandLineOption datasetNameOption({"n", "name"}, "Specify the name of your dataset.");
+            QCommandLineOption datasetLabelOption({"l", "labels"}, "Specify the labels you use in your project.");
+            QCommandLineOption datsetLabelPathOption({"lp", "labels_path"}, "Specify the label path.");
+            QCommandLineOption datasetImagePathOption({"ip", "images_path"}, "Specify the images path.");
+
+            QList<QCommandLineOption> optionsList;
+            optionsList << datasetNameOption << datasetLabelOption << datsetLabelPathOption << datasetImagePathOption;
+
+            parser.addOptions(optionsList);
+
+            parser.process(app.arguments());
+
+            clparser::_checkRequiredOptions(parser, optionsList);
+
+            qInfo() << "Creating dataset...";
+
             dataset::createDataset
                 (
-                    createDatasetParser.value(nameOption),
-                    createDatasetParser.value("imagepath"),
-                    createDatasetParser.value("labels"),
-                    createDatasetParser.value("labelpath")
+                parser.value(datasetNameOption),
+                parser.value(datasetImagePathOption),
+                parser.value(datasetLabelOption),
+                parser.value(datsetLabelPathOption)
                 );
         }
-    }
 
-    else if (parser.isSet("train"))
-    {
-        trainParser.process(app); // same as line 102
-        clparser::_checkRequiredOptions(trainParser);
-        model::trainModel
-        (
-            trainParser.value("modelname"),
-            trainParser.value("projectname")
-        );
-    }
+        else if (command == "profile")
+        {
+            parser.clearPositionalArguments();
+            parser.addPositionalArgument("profile", "Create a profile.", "create profile ...");
 
-    else if (parser.isSet("list"))
-    {
-        listParser.process(app); // same as line 102
-        // todo: implement this:
-        /** if (listParser.isSet("dataset"))
-        {
-            dataset::list();
+            QCommandLineOption profileNameOption({"n", "name"}, "Specify the name of your profile.");
+            QCommandLineOption profileFrameworkOption({"f", "framework"}, "Specify the framework you want to use.");
+            QCommandLineOption profileScopeOption({"s", "scope"}, "Specify which field of machine lerning you want to use.");
+
+            QList<QCommandLineOption> optionsList;
+            optionsList << profileNameOption << profileFrameworkOption << profileScopeOption;
+
+            parser.addOptions(optionsList);
+
+            parser.process(app.arguments());
+
+            clparser::_checkRequiredOptions(parser, optionsList);
+
+            qInfo() << "Creating profile...";
+
+            profile::createProfile
+                (
+                parser.value(profileNameOption),
+                parser.value(profileFrameworkOption),
+                parser.value(profileScopeOption)
+                );
+
         }
-        else if (listParser.isSet("profile"))
+
+        else if (command == "project")
         {
-            profile::list();
+            parser.clearPositionalArguments();
+            parser.addPositionalArgument("project", "Create a project.", "create project ...");
+
+            QCommandLineOption projectNameOption({"n", "name"}, "Specify the name of your project.");
+            QCommandLineOption projectProfileOption({"p", "profile"}, "Specify the profile you want to use for your project.");
+            QCommandLineOption projectDatasetOption({"d", "dataset"}, "Specify the dataset you want to use.");
+
+            QList<QCommandLineOption> optionsList;
+            optionsList << projectNameOption << projectProfileOption << projectDatasetOption;
+
+            parser.addOptions(optionsList);
+
+            parser.process(app.arguments());
+
+            clparser::_checkRequiredOptions(parser, optionsList);
+
+            qInfo() << "Creating project...";
+
+            project::createProject
+                (
+                parser.value(projectNameOption),
+                parser.value(projectProfileOption),
+                parser.value(projectDatasetOption)
+                );
+
         }
+
+        else if (command == "model")
+        {
+            parser.clearPositionalArguments();
+            parser.addPositionalArgument("model", "Create a model.", "create model ...");
+
+            QCommandLineOption modelNameOption({"n", "name"}, "Specify the name of your model.");
+            QCommandLineOption modelProjectOption({"p", "project"}, "Specify the project you want to use for your project.");
+            QCommandLineOption modelModelOption({"m", "model"}, "Specify the model you want to use.");
+
+            QList<QCommandLineOption> optionsList;
+            optionsList << modelNameOption << modelProjectOption << modelModelOption;
+
+            parser.addOptions(optionsList);
+
+            parser.process(app.arguments());
+
+            clparser::_checkRequiredOptions(parser, optionsList);
+
+            qInfo() << "Creating model...";
+
+            model::createModel
+                (
+                parser.value(modelNameOption),
+                parser.value(modelProjectOption),
+                parser.value(modelModelOption)
+                );
+
+        }
+
         else
         {
-            project::list();
-        } **/
-        qDebug() << "listing will be implemented soon"; // remove this then
+            parser.process(app);
+        }
+    }
+
+    else if (command == "train")
+    {
+        parser.clearPositionalArguments();
+        parser.addPositionalArgument("train", "Train your model.", "train ...");
+
+        QCommandLineOption trainModelOption({"m", "model"}, "Specify the name of the model.");
+        QCommandLineOption trainProjectOption({"p", "project"}, "Specify the name of the project.");
+
+        QList<QCommandLineOption> optionsList;
+        optionsList << trainModelOption << trainProjectOption;
+
+        parser.addOptions(optionsList);
+
+        parser.process(app.arguments());
+
+        clparser::_checkRequiredOptions(parser, optionsList);
+
+        qInfo() << "Initializing training...";
+
+        model::trainModel
+            (
+            parser.value(trainModelOption),
+            parser.value(trainProjectOption)
+            );
+    }
+
+    else if (command == "list")
+    {
+        parser.clearPositionalArguments();
+        parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list");
+
+        // todo: add function call to list here.
+    }
+
+    else
+    {
+        parser.process(app);
     }
 }
 
 void clparser::_checkRequiredOptions
     (
-    const QCommandLineParser& parser
+    QCommandLineParser& parser,
+    QList<QCommandLineOption>& optionsList
     )
 {
-    for (const QString& optionName : parser.optionNames())
+    for (QCommandLineOption& option : optionsList)
     {
-        if (!parser.isSet(optionName))
+        if (!parser.isSet(option))
         {
-            qCritical() << "Option Required!";
+            qInfo() << "Option Required!";
+            parser.showHelp(1);
         }
     }
 }

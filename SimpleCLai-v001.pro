@@ -24,15 +24,12 @@ HEADERS += \
         ./src/utils/tools.h
 
 
-# Set the target directory for installation
-target.path = $$[QT_INSTALL_EXAMPLES]/your_project_name
+target.path = /opt/SimpleClai-v001
 
-# Install the config files
 CONFIG(release, debug|release): INSTALLS += target config_install
 config_install.path = $$target.path/config
 config_install.files += config/*
 
-# Install the script files
 CONFIG(release, debug|release): INSTALLS += target script_install
 script_install.path = $$target.path/scripts
 script_install.files += scripts/*

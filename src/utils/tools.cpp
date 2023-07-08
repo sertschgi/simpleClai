@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QProcess>
 #include <QMap>
+#include <QResource>
 
 
 const char* tools::NoSuchProfileError::what() const noexcept

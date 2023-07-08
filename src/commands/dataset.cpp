@@ -51,7 +51,7 @@ void dataset::createDataset
 {
     using namespace::std;
 
-    QJsonObject jsonDatasets = tools::getJsonObject("../../config/datasets");
+    QJsonObject jsonDatasets = tools::getJsonObject("./config/datasets");
     QJsonObject newDataset;
 
     if (!jsonDatasets.contains(name))
@@ -96,12 +96,12 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson("../../config/datasets", jsonDatasets);
+    tools::writeJson("./config/datasets", jsonDatasets);
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject("../../config/datasets");
+    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets");
 
     qInfo() << tools::list(jsonDatasets);
 }

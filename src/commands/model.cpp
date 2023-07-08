@@ -39,7 +39,7 @@ void model::createModel
 {
     using namespace::std;
 
-    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects");
+    QJsonObject jsonProjects = tools::getJsonObject("./config/projects");
 
     if (!jsonProjects.contains(project))
     {

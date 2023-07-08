@@ -54,7 +54,7 @@ void project::createProject
 {
     using namespace::std;
 
-    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/projects.json");
+    const QJsonObject& jsonProfiles = tools::getJsonObject("./config/projects.json");
 
     if (!jsonProfiles.contains(profile))
     {
@@ -64,14 +64,14 @@ void project::createProject
     QJsonObject jsonProfile = jsonProfiles[profile].toObject();
 
 
-    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject("./config/projects.json");
 
     if (jsonProjects.contains(name))
     {
         throw project::ProjectNameError();
     }
 
-    const QJsonObject& jsonDatasets = tools::getJsonObject("../../config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets.json");
 
     if (!jsonDatasets.contains(dataset))
     {
@@ -86,19 +86,19 @@ void project::createProject
     const QString& framework = jsonProfile["framework"].toString();
     const QString& scope = jsonProfile["scope"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/frameworks.json");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("./config/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
     qDebug() << "Install Finished with output: " << tools::installProcess(jsonProject);
 
     jsonProjects[name] = newProject;
 
-    tools::writeJson("../../config/projects.json", jsonProjects);
+    tools::writeJson("./config/projects.json", jsonProjects);
 }
 
 void project::list()
 {
-    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject("./config/projects.json");
 
     qInfo() << tools::list(jsonProjects);
 }

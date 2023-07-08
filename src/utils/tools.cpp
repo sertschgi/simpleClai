@@ -93,10 +93,10 @@ int tools::copyFilesWithExtention
     {
         if (destination.mkdir(destDir)) //potential bug destination is technicly already destDir?.
         {
-            qDebug() << "created Directory";
+            qDebug() << "created directory";
         } else
         {
-            qCritical() << "Failed to create Directory!";
+            qCritical() << "Failed to create directory!";
         }
     }
 
@@ -117,6 +117,7 @@ int tools::copyFilesWithExtention
             qDebug() << "Failed to move file:" << files[i];
         }
     }
+
     return files.length();
 }
 

@@ -45,7 +45,7 @@ void dataset::createDataset
     (
     const QString& name,
     const QString& imagesPath,
-    const QString& lables,
+    const QString& labelmapPath,
     const QString& labelsPath
     )
 {
@@ -67,14 +67,14 @@ void dataset::createDataset
         qCritical() << "Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.";
     }
 
-    const QString newImagesPath = QString("%1/images").arg(datasetPath);
-    const QString newLabelsPath = QString("%1/labels").arg(datasetPath);
+    const QString newImagesPath = datasetPath + "/images";
+    const QString newLabelsPath = datasetPath + "/labels";
 
     QSettings settings("../../config/config.ini", QSettings::IniFormat);
 
     QStringList label_formats = settings.value("dataset/supported_labeling_formats").toStringList();
 
-    if (tools::copyFilesWithExtention(imagesPath,newImagesPath,label_formats) == 0)
+    if (tools::copyFilesWithExtention(labelsPath,newLabelsPath,label_formats) == 0)
     {
         throw dataset::LabelExtentionError();
     }
@@ -86,8 +86,13 @@ void dataset::createDataset
         throw dataset::ImageExtentionError();
     }
 
+    const QString& newLabelmapPath = datasetPath + "/annotations/labelmap.pbtxt";
+
+    QFile::copy(labelmapPath, newLabelmapPath);
+
     newDataset["images"] = newImagesPath;
     newDataset["labels"] = newLabelsPath;
+    newDataset["labelmap"] = newLabelmapPath;
 
     jsonDatasets[name] = newDataset;
 

@@ -23,6 +23,11 @@ HEADERS += \
         ./src/core/parser.h \
         ./src/utils/tools.h
 
+CONFIG += resources
+RESOURCES += \
+    config \
+    scripts
+
 unix {
     LIBS += -lpython3.10
     INCLUDEPATH += /usr/include/python3.10

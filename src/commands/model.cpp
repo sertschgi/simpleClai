@@ -39,7 +39,7 @@ void model::createModel
 {
     using namespace::std;
 
-    QJsonObject jsonProjects = tools::getJsonObject(":/user_data/projects");
+    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects");
 
     if (!jsonProjects.contains(project))
     {
@@ -56,13 +56,13 @@ void model::createModel
     }
 
     const QString& profile = jsonProject["profile"].toString();
-    const QJsonObject& jsonProfiles = tools::getJsonObject(":/user_data/profiles");
+    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/profiles");
     const QJsonObject& jsonProfile = jsonProfiles[profile].toObject();
 
     const QString& scope = jsonProfile["scope"].toString();
     const QString& framework = jsonProfile["framework"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject(":/config/framework");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/framework");
     const QJsonObject& jsonScope = jsonFrameworks[framework][scope].toObject();
     const QJsonObject& jsonModels = jsonScope["models"].toObject();
 
@@ -79,7 +79,7 @@ void model::createModel
 
     newModel["model"] = model;
     jsonProjects[project].toObject()["models"].toObject()[name].toObject() = newModel;
-    tools::writeJson(":/user_data/projects", jsonProjects);
+    tools::writeJson("../../config/projects", jsonProjects);
 }
 
 void model::trainModel
@@ -88,7 +88,7 @@ void model::trainModel
     const QString& project
     )
 {
-    QJsonObject jsonProjects = tools::getJsonObject(":/user_data/projects");
+    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects");
 
     if (!jsonProjects.contains(project))
     {
@@ -102,13 +102,13 @@ void model::trainModel
         throw model::NoSuchModelError();
     }
     const QString& profile = jsonProject["profile"].toString();
-    const QJsonObject& jsonProfiles = tools::getJsonObject(":/user_data/profiles");
+    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/profiles");
     const QJsonObject& jsonProfile = jsonProfiles[profile].toObject();
 
     const QString& scope = jsonProfile["scope"].toString();
     const QString& framework = jsonProfile["framework"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject(":/config/framework");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/framework");
     const QJsonObject& jsonScope = jsonFrameworks[framework][scope].toObject();
 
     Py_Initialize();

@@ -51,7 +51,7 @@ void dataset::createDataset
 {
     using namespace::std;
 
-    QJsonObject jsonDatasets = tools::getJsonObject(":/user_data/datasets");
+    QJsonObject jsonDatasets = tools::getJsonObject("../../config/datasets");
     QJsonObject newDataset;
 
     if (!jsonDatasets.contains(name))
@@ -70,7 +70,7 @@ void dataset::createDataset
     const QString newImagesPath = QString("%1/images").arg(datasetPath);
     const QString newLabelsPath = QString("%1/labels").arg(datasetPath);
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings settings("../../config/config.ini", QSettings::IniFormat);
 
     QStringList label_formats = settings.value("dataset/supported_labeling_formats").toStringList();
 
@@ -91,12 +91,12 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson(":/user_data/datasets", jsonDatasets);
+    tools::writeJson("../../config/datasets", jsonDatasets);
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject(":/user_data/datasets");
+    const QJsonObject& jsonDatasets = tools::getJsonObject("../../config/datasets");
 
     qInfo() << tools::list(jsonDatasets);
 }

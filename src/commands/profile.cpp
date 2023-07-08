@@ -52,14 +52,14 @@ void profile::createProfile
 {
     using namespace::std;
 
-    QJsonObject jsonProfiles = tools::getJsonObject(":/profiles.json");
+    QJsonObject jsonProfiles = tools::getJsonObject("../../config/profiles.json");
 
     if (jsonProfiles.contains(name))
     {
         throw profile::ProfileNameError();
     }
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject(":/frameworks.json");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/frameworks.json");
 
     if (!jsonFrameworks.contains(framework))
     {
@@ -104,7 +104,7 @@ void profile::createProfile
 
 void profile::list()
 {
-    const QJsonObject& jsonProfiles = tools::getJsonObject(":/profiles.json");
+    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/profiles.json");
 
     qInfo() << tools::list(jsonProfiles);
 }

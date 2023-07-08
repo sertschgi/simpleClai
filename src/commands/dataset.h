@@ -8,6 +8,7 @@
 
 namespace dataset
 {
+class SA_DATASET_ERROR;
 class ImageExtentionError;
 class LabelExtentionError;
 class DatasetNameError;

@@ -13,12 +13,20 @@
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QProcessEnvironment>
 
 
 class dataset::DatasetNameError : public std::exception {
 public:
     const char* what() const noexcept override {
         return "Dataset has the same name as an other one!";
+    }
+};
+
+class dataset::SA_DATASET_ERROR : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.";
     }
 };
 
@@ -51,20 +59,24 @@ void dataset::createDataset
 {
     using namespace::std;
 
-    QJsonObject jsonDatasets = tools::getJsonObject("./config/datasets");
+    QJsonObject jsonDatasets = tools::getJsonObject("./config/datasets.json");
     QJsonObject newDataset;
 
-    if (!jsonDatasets.contains(name))
+    if (jsonDatasets.contains(name))
     {
         throw dataset::DatasetNameError();
     }
 
 
-    QString datasetPath = getenv("SA_DATASET_PATH");
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+    const QString& datasetPath = env.value("SA_DATASET_PATH");
+
+    qInfo() << "Your dataset will be stored in: " << datasetPath;
 
     if (datasetPath.isEmpty())
     {
-        qCritical() << "Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.";
+        throw SA_DATASET_ERROR();
     }
 
     const QString newImagesPath = datasetPath + "/images";

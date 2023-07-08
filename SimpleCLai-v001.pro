@@ -24,7 +24,7 @@ HEADERS += \
         ./src/utils/tools.h
 
 
-target.path = /opt/SimpleClai-v001
+target.path = /opt/SimpleCLai-v001/bin
 
 CONFIG(release, debug|release): INSTALLS += target config_install
 config_install.path = $$target.path/config

@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QString>
 #include <QFile>
+#include <QDebug>
 #include <QFileInfo>
 #include <QSettings>
 #include <QJsonDocument>
@@ -93,4 +94,11 @@ void project::createProject
     jsonProjects[name] = newProject;
 
     tools::writeJson(":/user_data/profile.json", jsonProjects);
+}
+
+void project::list()
+{
+    QJsonObject jsonProjects = tools::getJsonObject(":/user_data/projects.json");
+
+    qInfo() << tools::list(jsonProjects);
 }

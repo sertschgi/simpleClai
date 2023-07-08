@@ -7,6 +7,7 @@
 
 #include <QString>
 #include <QFile>
+#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QProcessEnvironment>
@@ -99,6 +100,13 @@ void profile::createProfile
     jsonProfiles[name] = newProfile;
 
     tools::writeJson(":/user_data/profiles.json", jsonProfiles);
+}
+
+void profile::list()
+{
+    const QJsonObject& jsonProfiles = tools::getJsonObject(":/profiles.json");
+
+    qInfo() << tools::list(jsonProfiles);
 }
 
 

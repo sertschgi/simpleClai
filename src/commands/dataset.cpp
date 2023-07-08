@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QDir>
+#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -91,4 +92,11 @@ void dataset::createDataset
     jsonDatasets[name] = newDataset;
 
     tools::writeJson(":/user_data/datasets", jsonDatasets);
+}
+
+void dataset::list()
+{
+    const QJsonObject& jsonDatasets = tools::getJsonObject(":/user_data/datasets");
+
+    qInfo() << tools::list(jsonDatasets);
 }

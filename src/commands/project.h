@@ -27,6 +27,8 @@ void init_tf_object_detection
     (
     const QJsonObject& newProject
     );
+
+void list();
 }
 
 

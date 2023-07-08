@@ -120,7 +120,7 @@ int tools::copyFilesWithExtention
     return files.length();
 }
 
-const QString& tools::installProcess
+QString tools::installProcess
     (
     const QJsonObject& object
     )
@@ -150,7 +150,7 @@ const QString& tools::installProcess
     return qoutput;
 }
 
-const QString& tools::interpretPath
+QString tools::interpretPath
     (
     const QString& path,
     const QMap<QString, QString>& replacements
@@ -163,7 +163,38 @@ const QString& tools::interpretPath
         result.replace(it.key(), it.value());
     }
 
-    const QString& returnresult = result;
-
-    return returnresult; // potential issue as well
+    return result; // potential issue as well
 }
+
+const QString tools::list
+    (
+    const QJsonObject& object
+    )
+{
+    QString outStr;
+
+    for (const QJsonValueConstRef refChildObject : object)
+    {
+        if (refChildObject.isObject())
+        {
+            QJsonObject childObject = refChildObject.toObject();
+
+            outStr += childObject.keys()[0] + "\n"
+                + "  |" + "\n";
+
+            for (QString key : childObject.keys())
+            {
+                outStr  += "  |--" + key + "-> ";
+
+                if (childObject[key].isObject())
+                {
+                    outStr += tools::list(childObject[key].toObject());
+                }
+            }
+        }
+
+    }
+    return outStr;
+}
+
+

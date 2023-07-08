@@ -21,6 +21,8 @@ void createProfile
     const QString& scope,
     const QString& framework
     );
+
+void list();
 }
 
 

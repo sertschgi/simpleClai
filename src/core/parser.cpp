@@ -31,7 +31,7 @@ void clparser::parseArgs
         parser.clearPositionalArguments();
         parser.addPositionalArgument("create", "Create a project, profile, dataset or model.", "create ...");
 
-        parser.parse(QCoreApplication::arguments());
+        parser.parse(app.arguments());
 
         args = parser.positionalArguments();
         command = args.isEmpty() ? QString() : args[1];
@@ -188,14 +188,37 @@ void clparser::parseArgs
     else if (command == "list")
     {
         parser.clearPositionalArguments();
-        parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list");
+        parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list [...]");
 
-        // todo: add function call to list here.
+        QCommandLineOption listDatasetsOption({"d", "datasets"}, "List the datasets.");
+        QCommandLineOption listProfilesOption({"f", "profiles"}, "List the profiles.");
+        QCommandLineOption listProjectsOption({"p", "projects"}, "List the projects.");
+
+        QList<QCommandLineOption> optionsList;
+        optionsList << listDatasetsOption << listProfilesOption << listProjectsOption;
+
+        parser.addOptions(optionsList);
+
+        parser.process(app.arguments());
+
+        if (parser.isSet(listDatasetsOption))
+        {
+            dataset::list();
+        }
+        else if (parser.isSet(listProfilesOption))
+        {
+            profile::list();
+        }
+        else
+        {
+            project::list();
+        }
     }
 
     else
     {
         parser.process(app);
+        parser.showHelp(1);
     }
 }
 

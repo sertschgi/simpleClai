@@ -41,15 +41,20 @@ void updateProgressBar
     int total
     );
 
-const QString& installProcess
+QString installProcess
     (
     const QJsonObject& object
     );
 
-const QString& interpretPath
+QString interpretPath
     (
         const QString& path,
         const QMap<QString, QString>& replacements
+    );
+
+const QString list
+    (
+    const QJsonObject& object
     );
 }
 

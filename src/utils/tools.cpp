@@ -53,6 +53,7 @@ void tools::writeJson
     )
 {
     QSaveFile jsonFile(filename);
+
     if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not find resource file! Is it deleted?\033[0m";
     }

@@ -57,6 +57,8 @@ void clparser::parseArgs
 
             qInfo() << "\033[32m[INFO]: Creating dataset..." << "\033[0m";
 
+            try
+            {
             dataset::createDataset
                 (
                 parser.value(datasetNameOption),
@@ -64,6 +66,11 @@ void clparser::parseArgs
                 parser.value(datasetLabelOption),
                 parser.value(datsetLabelPathOption)
                 );
+            }
+            catch (std::exception Error)
+            {
+            qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            }
         }
 
         else if (command == "profile")

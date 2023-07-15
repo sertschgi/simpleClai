@@ -72,12 +72,30 @@ void dataset::createDataset
 
     QString datasetPath = env.value("SA_DATASET_PATH");
 
-        if (datasetPath.isEmpty())
+    if (datasetPath.isEmpty())
     {
         dataset::SA_DATASET_ERROR error;
-        qInfo() << error.what()
-                << "defaulting to ~/datasets";
-        datasetPath = "~/datasets";
+
+        QString username = qgetenv("USER");
+        if (username.isEmpty())
+        {
+            username = qgetenv("USERNAME");
+        }
+
+        if (username == "root")
+        {
+            qCritical() << "\033[33m[ERROR] <CRITICAL>: Running as root!\033[0m";
+            datasetPath = "./datasets";
+        }
+        else
+        {
+            datasetPath = "/home/" + username + "/.simpleCLai/datasets";
+        }
+
+        qInfo() << "\033[36m[ERROR] <NON_CRITICAL>:"
+                << error.what()
+                << "defaulting to" << datasetPath
+                << "\033[0m";
     }
 
         qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
@@ -111,12 +129,12 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson("./config/datasets", jsonDatasets);
+    tools::writeJson("/home/rdk/simpleClai-test/datasets.json", jsonDatasets);
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets");
+    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets.json");
 
     qInfo() << tools::list(jsonDatasets);
 }

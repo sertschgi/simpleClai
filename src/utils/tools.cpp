@@ -28,7 +28,7 @@ QJsonObject tools::getJsonObject
     QFile jsonFile(filename);
 
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCritical() << "Could not find resource file! Is it deleted?";
+        qFatal() << "\033[31m[ERROR] <FATAL>: Could not find resource file! Is it deleted?\033[0m";
     }
 
     QByteArray jsonData = jsonFile.readAll();
@@ -38,7 +38,7 @@ QJsonObject tools::getJsonObject
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parsingError);
 
     if (parsingError.error != QJsonParseError::NoError) {
-        qCritical() << "File Syntax wrong or uncompleted! Is the file corrupted?";
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: File Syntax wrong or uncompleted! Is the file corrupted?\033[0m";
     }
 
     QJsonObject jsonObject = jsonDoc.object();
@@ -54,7 +54,7 @@ void tools::writeJson
 {
     QSaveFile jsonFile(filename);
     if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qCritical() << "Could not find resource file! Is it deleted?";
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not find resource file! Is it deleted?\033[0m";
     }
 
     QJsonDocument jsonDoc(jsonObject);
@@ -62,7 +62,7 @@ void tools::writeJson
 
     if (!jsonFile.commit())
     {
-        qCritical() << "Could not save the file! Try again!?";
+        qFatal() << "\033[31m[ERROR] <FATAL>: Could not save the file! Try again!?\033[0m";
     }
 }
 
@@ -75,10 +75,12 @@ void tools::updateProgressBar
     const int barWidth = 40;
     int completedWidth = barWidth * progress / total;
 
-    QString progressBar = QString("[%1%2%3]").arg(QString(completedWidth, '#'),
-                                                  QString(barWidth - completedWidth, ' '),
-                                                  QString::number(progress * 100 / total));
-    qDebug() << progressBar;
+    qInfo() << "\033[36m[PROGRESS]:"
+             << (QString("[%1%2] %3\%").arg(QString(completedWidth, '#'),
+                                           QString(barWidth - completedWidth, ' '),
+                                           QString::number(100 * progress / total)
+                                           )).toLocal8Bit().data()
+             << "\033[0m";
 }
 
 int tools::copyFilesWithExtention
@@ -92,12 +94,12 @@ int tools::copyFilesWithExtention
 
     if (!destination.exists())
     {
-        if (destination.mkdir(destDir)) //potential bug destination is technicly already destDir?.
+        if (destination.mkdir(destDir))
         {
-            qDebug() << "created directory";
+            qDebug() << "\033[32m[INFO]: created directory\033[0m";
         } else
         {
-            qCritical() << "Failed to create directory!";
+            qFatal() << "\033[31m[ERROR] <FATAL>: Failed to create directory!\033[0m";
         }
     }
 
@@ -111,11 +113,11 @@ int tools::copyFilesWithExtention
 
         if (QFile::copy(sourcePath, destPath))
         {
-            tools::updateProgressBar(i, files.length());
+            tools::updateProgressBar(i+1, files.length());
         }
         else
         {
-            qDebug() << "Failed to move file:" << files[i];
+            qCritical() << "\033[33m[ERROR] <CRITICAL>: Failed to move file:\033[35m" << files[i] << "\033[0m";
         }
     }
 

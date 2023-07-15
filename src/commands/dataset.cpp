@@ -70,14 +70,17 @@ void dataset::createDataset
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    const QString& datasetPath = env.value("SA_DATASET_PATH");
+    QString datasetPath = env.value("SA_DATASET_PATH");
 
-    qInfo() << "Your dataset will be stored in: " << datasetPath;
-
-    if (datasetPath.isEmpty())
+        if (datasetPath.isEmpty())
     {
-        throw SA_DATASET_ERROR();
+        dataset::SA_DATASET_ERROR error;
+        qInfo() << error.what()
+                << "defaulting to ~/datasets";
+        datasetPath = "~/datasets";
     }
+
+        qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
 
     const QString newImagesPath = datasetPath + "/images";
     const QString newLabelsPath = datasetPath + "/labels";

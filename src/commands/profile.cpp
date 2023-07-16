@@ -95,7 +95,7 @@ void profile::createProfile
 
     const QJsonObject& jsonProfile = jsonScopes["profile"].toObject();
 
-    qDebug() << "Install Finished with output: " << tools::installProcess(jsonProfile);
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonProfile) << "\033[0m";
 
     jsonProfiles[name] = newProfile;
 

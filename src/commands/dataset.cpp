@@ -129,7 +129,7 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson("/home/rdk/simpleClai-test/datasets.json", jsonDatasets);
+    tools::writeJson("./config/datasets.json", jsonDatasets);
 }
 
 void dataset::list()

@@ -93,13 +93,19 @@ void clparser::parseArgs
 
             qInfo() << "[INFO]: Creating profile...";
 
+            try
+            {
             profile::createProfile
                 (
                 parser.value(profileNameOption),
                 parser.value(profileFrameworkOption),
                 parser.value(profileScopeOption)
                 );
-
+            }
+            catch (std::exception Error)
+            {
+            qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            }
         }
 
         else if (command == "project")
@@ -122,12 +128,19 @@ void clparser::parseArgs
 
             qInfo() << "[INFO]: Creating project...";
 
+            try
+            {
             project::createProject
                 (
                 parser.value(projectNameOption),
                 parser.value(projectProfileOption),
                 parser.value(projectDatasetOption)
                 );
+            }
+            catch (std::exception Error)
+            {
+                qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            }
 
         }
 
@@ -151,12 +164,19 @@ void clparser::parseArgs
 
             qInfo() << "[INFO]: Creating model...";
 
+            try
+            {
             model::createModel
                 (
                 parser.value(modelNameOption),
                 parser.value(modelProjectOption),
                 parser.value(modelModelOption)
                 );
+            }
+            catch (std::exception Error)
+            {
+                qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            }
 
         }
 
@@ -186,11 +206,18 @@ void clparser::parseArgs
 
         qInfo() << "[INFO]: Initializing training...";
 
+        try
+        {
         model::trainModel
             (
             parser.value(trainModelOption),
             parser.value(trainProjectOption)
             );
+        }
+        catch (std::exception Error)
+        {
+            qFatal() << "\033[31m" << Error.what() << "\033[0m";
+        }
     }
 
     else if (command == "list")

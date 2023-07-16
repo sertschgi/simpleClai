@@ -73,7 +73,7 @@ void model::createModel
     
     const QJsonObject& jsonModel = jsonModels[model].toObject();
 
-    qDebug() << "Install Finished with output: " << tools::installProcess(jsonModel);
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonModel) << "\033[0m";
 
     QJsonObject newModel;
 

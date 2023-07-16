@@ -89,7 +89,7 @@ void project::createProject
     const QJsonObject& jsonFrameworks = tools::getJsonObject("./config/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
-    qDebug() << "Install Finished with output: " << tools::installProcess(jsonProject);
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonProject) << "\033[0m";
 
     jsonProjects[name] = newProject;
 

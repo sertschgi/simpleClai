@@ -59,8 +59,14 @@ file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
 # Run a post-installation script to add your application to the PATH
+# Run a post-installation script to add your application to the PATH
 install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bashrc\")" CONFIGURATIONS Release)
 install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bash_profile\")" CONFIGURATIONS Release)
+
+# Directly update PATH in the current terminal session
+install(CODE "message(\"Updating PATH in the current terminal session to include ${target_path_install}\")"
+        CODE "execute_process(COMMAND export PATH=${target_path_install}:\$PATH)"
+        CONFIGURATIONS Release)
 
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")

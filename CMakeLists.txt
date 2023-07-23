@@ -73,12 +73,12 @@ install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 #set(post_installation_script_path "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake")
 #configure_file("${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake.in" ${post_installation_script_path} @ONLY)
 
-#install(SCRIPT ${post_installation_script_path})
+install(SCRIPT "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake")
 
-install(CODE "message(\"Running post-installation script\")"
-        SCRIPT "${CMAKE_SOURCE_DIR}/set_path.sh"
-        COMPONENT Runtime
-        CONFIGURATIONS Release)
+#install(CODE "message(\"Running post-installation script\")"
+#        SCRIPT "${CMAKE_SOURCE_DIR}/post_installation/setPaths.sh"
+#        COMPONENT Runtime
+#        CONFIGURATIONS Release)
 
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")

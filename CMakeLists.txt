@@ -59,22 +59,29 @@ install(FILES ${config_files} DESTINATION "${target_path_install}/config")
 file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
+# Create a custom target for the post-installation script
+#install(CODE
+#        "execute_process(
+#            COMMAND
+#            ${CMAKE_COMMAND}
+#            -Dtarget_path_install=${target_path_install}
+#            -P<
+#            ${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake
+#        )"
+#)
+
+#set(post_installation_script_path "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake")
+#configure_file("${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake.in" ${post_installation_script_path} @ONLY)
+
+#install(SCRIPT ${post_installation_script_path})
+
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "sert grc (sertschgi)")
+# set(CPACK_POST_INSTALL_SCRIPT "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "sert grc (sertschgi)")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Automates your Tensorflow-Ai installation and training!")
 set(CPACK_PACKAGE_VERSION "0.0.1") # Set your package version
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
 include(CPack)
-
-# Create a custom target for the post-installation script
-add_custom_target(post_install ALL
-    COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake"
-    COMMENT "Running post-installation script"
-    DEPENDS "${CMAKE_SOURCE_DIR}/post_installation/setPaths.cmake"
-)
-
-# Add the custom target to CPack's post_install target
-add_dependencies(post_install package)

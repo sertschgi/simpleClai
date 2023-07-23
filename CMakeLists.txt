@@ -35,7 +35,8 @@ find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Python REQUIRED COMPONENTS Development)
 
 # Add the executable and link against Qt Core
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS}
+    post_installation/update_paths)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
 
 # Include Python headers
@@ -58,16 +59,6 @@ install(FILES ${config_files} DESTINATION "${target_path_install}/config")
 file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
-# Run a post-installation script to add your application to the PATH
-# Run a post-installation script to add your application to the PATH
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bashrc\")" CONFIGURATIONS Release)
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bash_profile\")" CONFIGURATIONS Release)
-
-# Directly update PATH in the current terminal session
-install(CODE "message(\"Updating PATH in the current terminal session to include ${target_path_install}\")"
-        CODE "execute_process(COMMAND export PATH=${target_path_install}:\$PATH)"
-        CONFIGURATIONS Release)
-
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "sert grc (sertschgi)")
@@ -77,3 +68,12 @@ set(CPACK_PACKAGE_VERSION "0.0.1") # Set your package version
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
 include(CPack)
+
+# Run a post-installation script to add your application to the PATH
+install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bashrc\")" CONFIGURATIONS Release)
+install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bash_profile\")" CONFIGURATIONS Release)
+
+# Directly update PATH in the current terminal session
+install(CODE "message(\"Updating PATH in the current terminal session to include ${target_path_install}\")"
+        CODE "execute_process(COMMAND export PATH=${target_path_install}:\$PATH)"
+        CONFIGURATIONS Release)

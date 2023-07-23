@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.0, 2023-07-23T18:42:10. -->
+<!-- Written by QtCreator 11.0.0, 2023-07-23T19:20:22. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -403,9 +403,9 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">simpleCLai</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.simpleCLai</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">simpleCLai</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">simpleClai</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.simpleClai</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">simpleClai</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>

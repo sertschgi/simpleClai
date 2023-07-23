@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QCoreApplication::setApplicationName("SimpleCLai");
+    QCoreApplication::setApplicationName("simpleCLai");
     QCoreApplication::setApplicationVersion("0.0.1");
 
     clparser::parseArgs(a);

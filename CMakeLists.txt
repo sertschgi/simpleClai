@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(simpleCLai)
+project(simpleClai)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -60,10 +60,10 @@ install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")
-set(CPACK_PACKAGE_CONTACT "Your Name <your.email@example.com>")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your.email@example.com>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Brief description of your package")
-set(CPACK_PACKAGE_VERSION "1.0.0") # Set your package version
+set(CPACK_PACKAGE_CONTACT "sert grc (sertschgi)")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "sert grc (sertschgi)")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Automates your Tensorflow-Ai installation and training!")
+set(CPACK_PACKAGE_VERSION "0.0.1") # Set your package version
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
 include(CPack)

@@ -59,12 +59,6 @@ install(FILES ${config_files} DESTINATION "${target_path_install}/config")
 file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
-# Add the installation path to the user's PATH during installation
-install(CODE "message(\"Adding installation path to user's PATH\")"
-        COMMAND ADD_PATH_TO_USER_BASHRC "${target_path_install}"
-        COMPONENT Runtime
-        CONFIGURATIONS Release)
-
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "sert grc (sertschgi)")
@@ -74,3 +68,13 @@ set(CPACK_PACKAGE_VERSION "0.0.1") # Set your package version
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
 include(CPack)
+
+# Create a custom target for the post-installation script
+add_custom_target(post_install ALL
+    COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/set_path.sh"
+    COMMENT "Running post-installation script"
+    DEPENDS "${CMAKE_SOURCE_DIR}/set_path.sh"
+)
+
+# Add the custom target to CPack's post_install target
+add_dependencies(post_install package)

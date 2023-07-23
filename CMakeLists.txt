@@ -35,8 +35,8 @@ find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Python REQUIRED COMPONENTS Development)
 
 # Add the executable and link against Qt Core
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS}
-    post_installation/update_paths)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
 
 # Include Python headers
@@ -71,6 +71,6 @@ include(CPack)
 
 # Run the post-installation script using CPack's post_install target
 install(CODE "message(\"Running post-installation script\")"
-        SCRIPT "${CMAKE_SOURCE_DIR}/set_paths.sh"
+        SCRIPT "${CMAKE_SOURCE_DIR}/post_installation/set_paths.sh"
         COMPONENT Runtime
         CONFIGURATIONS Release)

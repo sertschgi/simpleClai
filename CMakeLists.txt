@@ -73,7 +73,7 @@ include(CPack)
 add_custom_target(post_install ALL
     COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/AddPathToUser.cmake"
     COMMENT "Running post-installation script"
-    DEPENDS "${CMAKE_SOURCE_DIR}/AddPathToUser.cmake"
+    DEPENDS "${CMAKE_SOURCE_DIR}/setPaths.cmake"
 )
 
 # Add the custom target to CPack's post_install target

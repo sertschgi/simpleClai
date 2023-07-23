@@ -69,11 +69,8 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency det
 
 include(CPack)
 
-# Run a post-installation script to add your application to the PATH
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bashrc\")" CONFIGURATIONS Release)
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bash_profile\")" CONFIGURATIONS Release)
-
-# Directly update PATH in the current terminal session
-install(CODE "message(\"Updating PATH in the current terminal session to include ${target_path_install}\")"
-        CODE "execute_process(COMMAND export PATH=${target_path_install}:\$PATH)"
+# Run the post-installation script using CPack's post_install target
+install(CODE "message(\"Running post-installation script\")"
+        SCRIPT "${CMAKE_SOURCE_DIR}/set_path.sh"
+        COMPONENT Runtime
         CONFIGURATIONS Release)

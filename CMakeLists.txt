@@ -69,8 +69,8 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency det
 
 include(CPack)
 
-# Run the post-installation script using CPack's post_install target
-install(CODE "message(\"Running post-installation script\")"
-        SCRIPT "${CMAKE_SOURCE_DIR}/post_installation/set_paths.sh"
+# Add the installation path to the user's PATH during installation
+install(CODE "message(\"Adding installation path to user's PATH\")"
+        COMMAND ADD_PATH_TO_USER_BASHRC "${target_path_install}"
         COMPONENT Runtime
         CONFIGURATIONS Release)

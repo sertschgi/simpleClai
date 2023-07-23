@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(simpleCLai)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -47,6 +47,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${Python_LIBRARIES})
 # Install target and files for deployment
 set(target_path_install "/opt/${PROJECT_NAME}/bin")  # Change this path to the desired installation path
 
+# Install the binary executable to the specified path
+install(TARGETS ${PROJECT_NAME} DESTINATION "${target_path_install}")
 
 # Install all files in the config folder
 file(GLOB config_files "config/*")
@@ -56,10 +58,12 @@ install(FILES ${config_files} DESTINATION "${target_path_install}/config")
 file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
+# Create and install the Debian package using CPack
+set(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_CONTACT "Your Name <your.email@example.com>")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your.email@example.com>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Brief description of your package")
+set(CPACK_PACKAGE_VERSION "1.0.0") # Set your package version
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bashrc\")")
-install(CODE "execute_process(COMMAND sh -c \"echo 'export PATH=${target_path_install}:\$PATH' >> \$ENV{HOME}/.bash_profile\")")
-
-#install(FILES ${config_files} DESTINATION "${target_path_install}/config" PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-#install(FILES ${script_files} DESTINATION "${target_path_install}/scripts" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
+include(CPack)

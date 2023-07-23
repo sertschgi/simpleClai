@@ -59,6 +59,12 @@ install(FILES ${config_files} DESTINATION "${target_path_install}/config")
 file(GLOB script_files "scripts/*")
 install(FILES ${script_files} DESTINATION "${target_path_install}/scripts")
 
+# Add the installation path to the user's PATH during installation
+install(CODE "message(\"Adding installation path to user's PATH\")"
+        COMMAND ADD_PATH_TO_USER_BASHRC "${target_path_install}"
+        COMPONENT Runtime
+        CONFIGURATIONS Release)
+
 # Create and install the Debian package using CPack
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "sert grc (sertschgi)")
@@ -68,9 +74,3 @@ set(CPACK_PACKAGE_VERSION "0.0.1") # Set your package version
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # Enable automatic library dependency detection
 
 include(CPack)
-
-# Add the installation path to the user's PATH during installation
-install(CODE "message(\"Adding installation path to user's PATH\")"
-        COMMAND ADD_PATH_TO_USER_BASHRC "${target_path_install}"
-        COMPONENT Runtime
-        CONFIGURATIONS Release)

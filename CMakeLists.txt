@@ -71,6 +71,6 @@ include(CPack)
 
 # Run the post-installation script using CPack's post_install target
 install(CODE "message(\"Running post-installation script\")"
-        SCRIPT "${CMAKE_SOURCE_DIR}/set_path.sh"
+        SCRIPT "${CMAKE_SOURCE_DIR}/set_paths.sh"
         COMPONENT Runtime
         CONFIGURATIONS Release)

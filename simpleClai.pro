@@ -2,10 +2,6 @@ QT = core
 
 CONFIG += c++17 cmdline
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
 SOURCES += \
         main.cpp \
         ./src/commands/dataset.cpp \
@@ -23,29 +19,24 @@ HEADERS += \
         ./src/core/parser.h \
         ./src/utils/tools.h
 
-
-target.path = /opt/SimpleCLai-v001/bin
-
+# Following two blocks are for 'make install'.
+# Those will not be needed for (deb) packages as only 'make' is used.
+# The copying to the destination in deb packages is done by the
+# package manager. However, it still needs to be copied MANUALLY
+# in a representation of the folders on package creation.
 CONFIG(release, debug|release): INSTALLS += target config_install
-config_install.path = $$target.path/config
+config_install.path = /etc/$${TARGET}/scripts
 config_install.files += config/*
 
 CONFIG(release, debug|release): INSTALLS += target script_install
-script_install.path = $$target.path/scripts
+script_install.path = /etc/$${TARGET}/scripts
 script_install.files += scripts/*
 
 
-unix {
-    LIBS += -lpython3.10
-    INCLUDEPATH += /usr/include/python3.10
-}
+LIBS += -lpython3.11
+INCLUDEPATH += /usr/include/python3.11
 
-win32 {
-    LIBS += -LC:/Python38/libs -lpython38
-    INCLUDEPATH += C:/Python38/include
-}
-
-# Default rules for deployment.
+target.path = /usr/bin
 qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
+else: unix:!android: target.path = /usr/bin
 !isEmpty(target.path): INSTALLS += target

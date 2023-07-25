@@ -267,7 +267,7 @@ void clparser::_checkRequiredOptions
     {
         if (!parser.isSet(option))
         {
-            qCritical() << "[ERROR] <CRITICAL>: Option Required!";
+            qCritical() << "\033[33m[ERROR] <CRITICAL>: Option Required!\033[0m";
             parser.showHelp(1);
         }
     }

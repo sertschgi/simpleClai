@@ -15,51 +15,39 @@
 #include <QJsonObject>
 #include <QProcessEnvironment>
 
+const char* dataset::DatasetNameError::what() const noexcept {
+    return "\033[31m[ERROR] <FATAL>: Dataset has the same name as an other one!\033[0m";
+}
 
-class dataset::DatasetNameError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "Dataset has the same name as an other one!";
-    }
-};
+const char* dataset::SA_DATASET_ERROR::what() const noexcept {
+    return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
+}
 
-class dataset::SA_DATASET_ERROR : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.";
-    }
-};
+const char* dataset::LabelExtentionError::what() const noexcept {
+    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
+    QStringList formats = settings.value("dataset/supported_labeling_formats").toStringList();
+    return ("\033[31m[ERROR] <FATAL>: No files copied! Probably unsupported labeling format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
+}
 
-class dataset::LabelExtentionError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        QSettings settings("config.ini", QSettings::IniFormat);
-        QStringList formats = settings.value("dataset/supported_labeling_formats").toStringList();
-        return QString("Unsupported labeling format. Currently supported formats: %1").arg(formats.join(",")).toUtf8().constData();
-    }
-};
-
-class dataset::ImageExtentionError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        QSettings settings("config.ini", QSettings::IniFormat);
-        QStringList formats = settings.value("dataset/supported_img_formats").toStringList();
-        return QString("Unsupported Image format. Currently supported formats: %1").arg(formats.join(",")).toUtf8().constData();
-    }
-};
-
+const char* dataset::ImageExtentionError::what() const noexcept {
+    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
+    QStringList formats = settings.value("dataset/supported_img_formats").toStringList();
+    return ("\033[31m[ERROR] <FATAL>: No files copied! Probably unsupported Image format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
+}
 
 void dataset::createDataset
     (
-    const QString& name,
-    const QString& imagesPath,
-    const QString& labelmapPath,
-    const QString& labelsPath
-    )
+        const QString& name,
+        const QString& labelmapPath,
+        const QString& imagesPath,
+        const QString& labelsPath
+        )
 {
     using namespace::std;
 
-    QJsonObject jsonDatasets = tools::getJsonObject("./config/datasets.json");
+    QString sclaiConfigPath = QDir::homePath() + "/.sclai";
+
+    QJsonObject jsonDatasets = tools::getJsonObject(sclaiConfigPath + "/config/datasets.json");
     QJsonObject newDataset;
 
     if (jsonDatasets.contains(name))
@@ -76,7 +64,7 @@ void dataset::createDataset
     {
         dataset::SA_DATASET_ERROR error;
 
-        QString username = qgetenv("USER");
+        /* QString username = qgetenv("USER");
         if (username.isEmpty())
         {
             username = qgetenv("USERNAME");
@@ -90,20 +78,21 @@ void dataset::createDataset
         else
         {
             datasetPath = "/home/" + username + "/.simpleCLai/datasets";
-        }
+        } */
 
-        qInfo() << "\033[36m[ERROR] <NON_CRITICAL>:"
-                << error.what()
-                << "defaulting to" << datasetPath
+        datasetPath = sclaiConfigPath + "/datasets";
+
+        qInfo() << error.what() << "\033[36m"
+                << "Default:" << datasetPath
                 << "\033[0m";
     }
 
-        qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
+    qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
 
     const QString newImagesPath = datasetPath + "/images";
     const QString newLabelsPath = datasetPath + "/labels";
 
-    QSettings settings("../../config/config.ini", QSettings::IniFormat);
+    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
 
     QStringList label_formats = settings.value("dataset/supported_labeling_formats").toStringList();
 
@@ -129,12 +118,12 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson("./config/datasets.json", jsonDatasets);
+    tools::writeJson(sclaiConfigPath + "/config/datasets.json", jsonDatasets);
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject(QDir::homePath() + "/.sclai/config/datasets.json");
 
     qInfo() << tools::list(jsonDatasets);
 }

@@ -1,3 +1,5 @@
+TARGET = sclai
+
 QT = core
 
 CONFIG += c++17 cmdline

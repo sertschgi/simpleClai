@@ -42,7 +42,7 @@ void clparser::parseArgs
             parser.addPositionalArgument("dataset", "Create a dataset.", "create dataset ...");
 
             QCommandLineOption datasetNameOption({"n", "name"}, "Specify the name of your dataset.", "name");
-            QCommandLineOption datasetLabelOption({"l", "labels"}, "Specify the labels you use in your project.", "project");
+            QCommandLineOption datasetLabelOption({"l", "labels"}, "Specify the path of your labelmap.pbtxt", "labels");
             QCommandLineOption datsetLabelPathOption({"a", "labels_path"}, "Specify the label path.", "label_path");
             QCommandLineOption datasetImagePathOption({"m", "images_path"}, "Specify the images path.", "image_path");
 
@@ -62,14 +62,14 @@ void clparser::parseArgs
             dataset::createDataset
                 (
                 parser.value(datasetNameOption),
-                parser.value(datasetImagePathOption),
                 parser.value(datasetLabelOption),
+                parser.value(datasetImagePathOption),
                 parser.value(datsetLabelPathOption)
                 );
             }
-            catch (std::exception Error)
+            catch (const dataset::DatasetError& Error)
             {
-            qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            qFatal() << Error.what();
             }
         }
 

@@ -28,7 +28,9 @@ QJsonObject tools::getJsonObject
     QFile jsonFile(filename);
 
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qFatal() << "\033[31m[ERROR] <FATAL>: Could not find resource file! Is it deleted?\033[0m";
+        qCritical() << "\033[36m[ALERT]: Could not find resource file. Creating a new one.\033[0m";
+
+        return QJsonObject();
     }
 
     QByteArray jsonData = jsonFile.readAll();
@@ -55,7 +57,7 @@ void tools::writeJson
     QSaveFile jsonFile(filename);
 
     if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not find resource file! Is it deleted?\033[0m";
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!\033[0m";
     }
 
     QJsonDocument jsonDoc(jsonObject);
@@ -95,9 +97,11 @@ int tools::copyFilesWithExtention
 
     if (!destination.exists())
     {
-        if (destination.mkdir(destDir))
+        qCritical() << "\033[36m[ALERT]: Could not find the" << destDir << "directory. Creating a new one.\033[0m";
+
+        if (destination.mkpath(destDir))
         {
-            qDebug() << "\033[32m[INFO]: created directory\033[0m";
+            qInfo() << "\033[32m[INFO]: Successfully created directory!\033[0m";
         } else
         {
             qFatal() << "\033[31m[ERROR] <FATAL>: Failed to create directory!\033[0m";
@@ -106,6 +110,16 @@ int tools::copyFilesWithExtention
 
     QDir directory(sourceDir);
     QStringList files = directory.entryList(extensions, QDir::Files | QDir::NoDotAndDotDot);
+
+    qInfo() << "\033[32m[INFO]:"
+            << files.size() << "files will be copied from\033[35m"
+            << directory.absolutePath() << "\033[32mto\033[35m"
+            << destDir;
+    qInfo() << "\033[32m[INFO]: Files:\033[35m" << files.join(", ") << "\033[0m";
+
+
+    qInfo().noquote() << "\033[32m[INFO]: Only" << extensions.size() << "supported formats:" << extensions.join(", ") << "\033[0m";
+
 
     for (int i = 0; i < files.length(); i++)
     {

@@ -16,17 +16,17 @@
 
 const char* model::ModelNameError::what() const noexcept
 {
-    return "Model has the same name as an other one!";
+    return "\033[31m[ERROR] <FATAL>: Model has the same name as an other one!\033[0m";
 }
 
 const char* model::NoSuchModelError::what() const noexcept
 {
-    return "There is no such Model available!";
+    return "\033[31m[ERROR] <FATAL>: here is no such Model available!\033[0m";
 }
 
 const char* model::NoSuchProjectError::what() const noexcept
 {
-    return "There is no such Project available!";
+    return "\033[31m[ERROR] <FATAL>: There is no such Project available!\033[0m";
 }
 
 

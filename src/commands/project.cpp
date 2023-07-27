@@ -6,6 +6,7 @@
 #include <cstdlib> // for linux system variable
 #include <exception>
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QString>
 #include <QFile>
@@ -16,34 +17,25 @@
 #include <QJsonObject>
 #include <QMap>
 
+const char* project::ProjectNameError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: Project has the same name as an other one!\033[0m";
+}
 
-class project::ProjectNameError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "Project has the same name as an other one!";
-    }
-};
+const char* project::NoSuchModelError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: There is no such Model available!\033[0m";
+}
 
-class project::NoSuchModelError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "There is no such Model available!";
-    }
-};
+const char* project::NoSuchDatasetError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: There is no such Dataset available!\033[0m";
+}
 
-class project::NoSuchDatasetError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "There is no such Dataset available!";
-    }
-};
-
-class project::DatasetNotCompatibleLabelsError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "The labels of the dataset provided are not compatible with the labels required for the profile given.";
-    }
-};
+const char* project::DatasetNotCompatibleLabelsError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: The labels of the dataset provided are not compatible with the labels required for the profile given.\033[0m";
+}
 
 void project::createProject
     (
@@ -98,7 +90,7 @@ void project::createProject
 
 void project::list()
 {
-    QJsonObject jsonProjects = tools::getJsonObject("./config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/projects.json");
 
     qInfo() << tools::list(jsonProjects);
 }

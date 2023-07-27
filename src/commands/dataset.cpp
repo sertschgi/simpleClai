@@ -6,6 +6,7 @@
 #include <cstdlib> // for linux system variable
 #include <exception>
 
+#include <QCoreApplication>
 #include <QString>
 #include <QSettings>
 #include <QFile>
@@ -15,24 +16,28 @@
 #include <QJsonObject>
 #include <QProcessEnvironment>
 
-const char* dataset::DatasetNameError::what() const noexcept {
+const char* dataset::DatasetNameError::what() const noexcept
+{
     return "\033[31m[ERROR] <FATAL>: Dataset has the same name as an other one!\033[0m";
 }
 
-const char* dataset::SA_DATASET_ERROR::what() const noexcept {
+const char* dataset::SA_DATASET_ERROR::what() const noexcept
+{
     return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
 }
 
-const char* dataset::LabelExtentionError::what() const noexcept {
-    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
+const char* dataset::LabelExtentionError::what() const noexcept
+{
+    QSettings settings("/etc/" + QCoreApplication::applicationName() +"/config/config.ini", QSettings::IniFormat);
     QStringList formats = settings.value("dataset/supported_labeling_formats").toStringList();
-    return ("\033[31m[ERROR] <FATAL>: No files copied! Probably unsupported labeling format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
+    return ("\033[31m[ERROR] <FATAL>: No files found! Probably wrong path or unsupported labeling format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
 }
 
-const char* dataset::ImageExtentionError::what() const noexcept {
-    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
+const char* dataset::ImageExtentionError::what() const noexcept
+{
+    QSettings settings("/etc/" + QCoreApplication::applicationName() + "/config/config.ini", QSettings::IniFormat);
     QStringList formats = settings.value("dataset/supported_img_formats").toStringList();
-    return ("\033[31m[ERROR] <FATAL>: No files copied! Probably unsupported Image format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
+    return ("\033[31m[ERROR] <FATAL>: No files found! Probably wrong path or unsupported image format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
 }
 
 void dataset::createDataset
@@ -45,9 +50,9 @@ void dataset::createDataset
 {
     using namespace::std;
 
-    QString sclaiConfigPath = QDir::homePath() + "/.sclai";
+    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
 
-    QJsonObject jsonDatasets = tools::getJsonObject(sclaiConfigPath + "/config/datasets.json");
+    QJsonObject jsonDatasets = tools::getJsonObject(appConfigPath + "/config/datasets.json");
     QJsonObject newDataset;
 
     if (jsonDatasets.contains(name))
@@ -80,7 +85,7 @@ void dataset::createDataset
             datasetPath = "/home/" + username + "/.simpleCLai/datasets";
         } */
 
-        datasetPath = sclaiConfigPath + "/datasets";
+        datasetPath = appConfigPath + "/datasets/" + name;
 
         qInfo() << error.what() << "\033[36m"
                 << "Default:" << datasetPath
@@ -92,7 +97,7 @@ void dataset::createDataset
     const QString newImagesPath = datasetPath + "/images";
     const QString newLabelsPath = datasetPath + "/labels";
 
-    QSettings settings("/etc/sclai/config/config.ini", QSettings::IniFormat);
+    QSettings settings("/etc/" + QCoreApplication::applicationName() + "/config/config.ini", QSettings::IniFormat);
 
     QStringList label_formats = settings.value("dataset/supported_labeling_formats").toStringList();
 
@@ -118,12 +123,14 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson(sclaiConfigPath + "/config/datasets.json", jsonDatasets);
+    tools::writeJson(appConfigPath + "/config/datasets.json", jsonDatasets);
+
+    qInfo() << "\033[32m[INFO]: Successfully created dataset!\033[0m";
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject(QDir::homePath() + "/.sclai/config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/datasets.json");
 
     qInfo() << tools::list(jsonDatasets);
 }

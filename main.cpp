@@ -8,10 +8,12 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QCoreApplication::setApplicationName("simpleClai");
+    QCoreApplication::setApplicationName("sclai");
     QCoreApplication::setApplicationVersion("0.0.1");
 
     clparser::parseArgs(a);
 
-    return a.exec();
+    qInfo() << "\033[32m[INFO]: Finished!\033[0m";
+
+    return 0;
 }

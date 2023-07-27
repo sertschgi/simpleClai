@@ -10,17 +10,23 @@
 
 namespace model
 {
-class ModelNameError : public std::exception {
+class ModelError : public std::exception
+{
+public:
+    virtual const char* what() const noexcept = 0;
+};
+class ModelNameError : public ModelError
+{
 public:
     const char* what() const noexcept override;
 };
-
-class NoSuchProjectError : public std::exception {
+class NoSuchProjectError : public ModelError
+{
 public:
     const char* what() const noexcept override;
 };
-
-class NoSuchModelError : public std::exception {
+class NoSuchModelError : public ModelError
+{
 public:
     const char* what() const noexcept override;
 };

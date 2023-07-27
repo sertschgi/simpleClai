@@ -5,43 +5,34 @@
 #include <cstdint>
 #include <exception>
 
+#include <QCoreApplication>
 #include <QString>
 #include <QFile>
+#include <QDir>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QProcessEnvironment>
 
+const char* profile::ProfileNameError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: Profile has the same name as an other one!\033[0m";
+}
 
+const char* profile::NoSuchScopeError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: There is no such scope available!\033[0m";
+}
 
-class profile::ProfileNameError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "Profile has the same name as an other one!";
-    }
-};
+const char* profile::NoSuchFrameworkError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: There is no such Framework available!\033[0m";
+}
 
-class profile::NoSuchScopeError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "There is no such scope available!";
-    }
-};
-
-class profile::NoSuchFrameworkError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "There is no such Framework available!";
-    }
-};
-
-class profile::NoSuchModelError : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "There is no such Model available!";
-    }
-};
-
+const char* profile::NoSuchModelError::what() const noexcept
+{
+    return "\033[31m[ERROR] <FATAL>: There is no such Model available!\033[0m";
+}
 
 void profile::createProfile
     (
@@ -52,14 +43,16 @@ void profile::createProfile
 {
     using namespace::std;
 
-    QJsonObject jsonProfiles = tools::getJsonObject("./config/profiles.json");
+    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
+
+    QJsonObject jsonProfiles = tools::getJsonObject(appConfigPath + "/config/profiles.json");
 
     if (jsonProfiles.contains(name))
     {
         throw profile::ProfileNameError();
     }
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("./config/frameworks.json");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
 
     if (!jsonFrameworks.contains(framework))
     {
@@ -99,12 +92,12 @@ void profile::createProfile
 
     jsonProfiles[name] = newProfile;
 
-    tools::writeJson(":/config/profiles.json", jsonProfiles);
+    tools::writeJson(appConfigPath + "/config/profiles.json", jsonProfiles);
 }
 
 void profile::list()
 {
-    const QJsonObject& jsonProfiles = tools::getJsonObject("./config/profiles.json");
+    const QJsonObject& jsonProfiles = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/profiles.json");
 
     qInfo() << tools::list(jsonProfiles);
 }

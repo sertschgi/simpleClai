@@ -6,20 +6,23 @@ CONFIG += c++17 cmdline
 
 SOURCES += \
         main.cpp \
-        ./src/commands/dataset.cpp \
-        ./src/commands/model.cpp \
-        ./src/commands/profile.cpp \
-        ./src/commands/project.cpp \
-        ./src/core/parser.cpp \
-        ./src/utils/tools.cpp
+        src/commands/dataset.cpp \
+        src/commands/model.cpp \
+        src/commands/profile.cpp \
+        src/commands/project.cpp \
+        src/commands/frameworks.cpp\
+        src/core/parser.cpp \
+        src/utils/tools.cpp
+
 
 HEADERS += \
-        ./src/commands/dataset.h \
-        ./src/commands/model.h \
-        ./src/commands/profile.h \
-        ./src/commands/project.h \
-        ./src/core/parser.h \
-        ./src/utils/tools.h
+        src/commands/dataset.h \
+        src/commands/model.h \
+        src/commands/profile.h \
+        src/commands/project.h \
+        src/commands/frameworks.h \
+        src/core/parser.h \
+        src/utils/tools.h
 
 # Following two blocks are for 'make install'.
 # Those will not be needed for (deb) packages as only 'make' is used.

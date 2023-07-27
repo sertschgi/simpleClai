@@ -8,23 +8,28 @@
 
 namespace dataset
 {
-class DatasetError : public std::exception {
+class DatasetError : public std::exception
+{
 public:
     virtual const char* what() const noexcept = 0;
 };
-class SA_DATASET_ERROR : public DatasetError {
+class SA_DATASET_ERROR : public DatasetError
+{
 public:
     const char* what() const noexcept override;
 };
-class ImageExtentionError : public DatasetError {
+class ImageExtentionError : public DatasetError
+{
 public:
     const char* what() const noexcept override;
 };
-class LabelExtentionError : public DatasetError {
+class LabelExtentionError : public DatasetError
+{
 public:
     const char* what() const noexcept override;
 };
-class DatasetNameError : public DatasetError {
+class DatasetNameError : public DatasetError
+{
 public:
     const char* what() const noexcept override;
 };

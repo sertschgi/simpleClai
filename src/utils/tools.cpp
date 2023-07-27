@@ -28,7 +28,7 @@ QJsonObject tools::getJsonObject
     QFile jsonFile(filename);
 
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCritical() << "\033[36m[ALERT]: Could not find resource file. Creating a new one.\033[0m";
+        qCritical() << "\033[36m[ALERT]: Could not find resource file:" << filename << "Creating a new one.\033[0m";
 
         return QJsonObject();
     }
@@ -56,8 +56,12 @@ void tools::writeJson
 {
     QSaveFile jsonFile(filename);
 
-    if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!\033[0m";
+    QDir().mkpath(QFileInfo(filename).absolutePath());
+
+    // qDebug() << "\033[90m[DEBUG]: Json file properties:" << jsonFile.fileName() << "\033[0m";
+
+    if (!jsonFile.open(QIODevice::WriteOnly)) {
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!:\033[35m" << filename << "\033[0m";
     }
 
     QJsonDocument jsonDoc(jsonObject);
@@ -67,6 +71,8 @@ void tools::writeJson
     {
         qFatal() << "\033[31m[ERROR] <FATAL>: Could not save the file! Try again!?\033[0m";
     }
+
+    qInfo() << "\033[32m[INFO]: Successfully saved file!\033[35m" << filename << "\033[0m";
 }
 
 void tools::updateProgressBar
@@ -78,7 +84,7 @@ void tools::updateProgressBar
     const int barWidth = 40;
     int completedWidth = barWidth * progress / total;
 
-    qInfo() << "\033[36m[PROGRESS]:"
+    qInfo() << "\033[34m[PROGRESS]:"
              << (QString("[%1%2] %3\%").arg(QString(completedWidth, '#'),
                                            QString(barWidth - completedWidth, ' '),
                                            QString::number(100 * progress / total)
@@ -109,13 +115,23 @@ int tools::copyFilesWithExtention
     }
 
     QDir directory(sourceDir);
-    QStringList files = directory.entryList(extensions, QDir::Files | QDir::NoDotAndDotDot);
+
+    QStringList filters;
+
+    for (QString ext : extensions)
+    {
+        filters.append("*." + ext);
+    }
+
+    qDebug() << "\033[90m[DEBUG]: Filters are:" << filters << "\033[0m";
+
+    QStringList files = directory.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
 
     qInfo() << "\033[32m[INFO]:"
             << files.size() << "files will be copied from\033[35m"
             << directory.absolutePath() << "\033[32mto\033[35m"
             << destDir;
-    qInfo() << "\033[32m[INFO]: Files:\033[35m" << files.join(", ") << "\033[0m";
+    qInfo() << "\033[90m[DEBUG]: Files:" << files.join(", ") << "\033[0m";
 
 
     qInfo().noquote() << "\033[32m[INFO]: Only" << extensions.size() << "supported formats:" << extensions.join(", ") << "\033[0m";

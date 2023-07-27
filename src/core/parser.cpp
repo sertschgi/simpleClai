@@ -4,6 +4,7 @@
 #include "../commands/model.h"
 #include "../commands/profile.h"
 #include "../commands/project.h"
+#include "../commands/frameworks.h"
 
 #include <QDebug>
 #include <QCommandLineParser>
@@ -55,7 +56,7 @@ void clparser::parseArgs
 
             clparser::_checkRequiredOptions(parser, optionsList);
 
-            qInfo() << "\033[32m[INFO]: Creating dataset..." << "\033[0m";
+            qInfo() << "\033[32m[INFO]: Creating dataset...\033[0m";
 
             try
             {
@@ -91,7 +92,7 @@ void clparser::parseArgs
 
             clparser::_checkRequiredOptions(parser, optionsList);
 
-            qInfo() << "[INFO]: Creating profile...";
+            qInfo() << "\033[32m[INFO]: Creating profile...\033[0m";
 
             try
             {
@@ -102,9 +103,9 @@ void clparser::parseArgs
                 parser.value(profileScopeOption)
                 );
             }
-            catch (std::exception Error)
+            catch (const profile::ProfileError& Error)
             {
-            qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            qFatal() << Error.what();
             }
         }
 
@@ -126,7 +127,7 @@ void clparser::parseArgs
 
             clparser::_checkRequiredOptions(parser, optionsList);
 
-            qInfo() << "[INFO]: Creating project...";
+            qInfo() << "\033[32m[INFO]: Creating project...\033[0m";
 
             try
             {
@@ -137,9 +138,9 @@ void clparser::parseArgs
                 parser.value(projectDatasetOption)
                 );
             }
-            catch (std::exception Error)
+            catch (const project::ProjectError& Error)
             {
-                qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            qFatal() << Error.what();
             }
 
         }
@@ -162,7 +163,7 @@ void clparser::parseArgs
 
             clparser::_checkRequiredOptions(parser, optionsList);
 
-            qInfo() << "[INFO]: Creating model...";
+            qInfo() << "\033[32m[INFO]: Creating model...\033[0m";
 
             try
             {
@@ -173,11 +174,10 @@ void clparser::parseArgs
                 parser.value(modelModelOption)
                 );
             }
-            catch (std::exception Error)
+            catch (const model::ModelError& Error)
             {
-                qFatal() << "\033[31m" << Error.what() << "\033[0m";
+            qFatal() << Error.what();
             }
-
         }
 
         else
@@ -204,20 +204,20 @@ void clparser::parseArgs
 
         clparser::_checkRequiredOptions(parser, optionsList);
 
-        qInfo() << "[INFO]: Initializing training...";
+        qInfo() << "\033[32m[INFO]: Initializing training...\033[0m";
 
-        try
-        {
+        // try
+        // {
         model::trainModel
             (
             parser.value(trainModelOption),
             parser.value(trainProjectOption)
             );
-        }
-        catch (std::exception Error)
-        {
-            qFatal() << "\033[31m" << Error.what() << "\033[0m";
-        }
+        // }
+        // catch (const model::TrainError& Error) <-- todo: implement this
+        // {
+        // qFatal() << Error.what();
+        // }
     }
 
     else if (command == "list")
@@ -228,9 +228,10 @@ void clparser::parseArgs
         QCommandLineOption listDatasetsOption({"d", "datasets"}, "List the datasets.");
         QCommandLineOption listProfilesOption({"f", "profiles"}, "List the profiles.");
         QCommandLineOption listProjectsOption({"p", "projects"}, "List the projects.");
+        QCommandLineOption listFrameworksOption({"p", "frameworks"}, "List the frameworks.");
 
         QList<QCommandLineOption> optionsList;
-        optionsList << listDatasetsOption << listProfilesOption << listProjectsOption;
+        optionsList << listDatasetsOption << listProfilesOption << listProjectsOption << listFrameworksOption;
 
         parser.addOptions(optionsList);
 
@@ -243,6 +244,10 @@ void clparser::parseArgs
         else if (parser.isSet(listProfilesOption))
         {
             profile::list();
+        }
+        else if (parser.isSet(listFrameworksOption))
+        {
+            frameworks::list();
         }
         else
         {

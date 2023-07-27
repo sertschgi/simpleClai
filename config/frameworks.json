@@ -4,13 +4,13 @@
             "interpreter" : "$PROJECT_PATH/sa_$NAME/python",
             "training_script" : "$API_PATH/models/research/object_detection/model_main_v2.py",
             "profile" : {
-                "install_script" : "./scripts/install_tf_object_detection.sh"
+                "install_script" : "$APP_SCRIPTS_PATH/scripts/install_tf_object_detection.sh"
             },
             "project" : {
-                "install_script" : "./scripts/setup_tf_object_detection_project.sh"
+                "install_script" : "$APP_SCRIPTS_PATH/scripts/setup_tf_object_detection_project.sh"
             },
             "model" : {
-                "install_script" : "./scripts/setup_tf_object_detection_model.sh"
+                "install_script" : "$APP_SCRIPTS_PATH/scripts/setup_tf_object_detection_model.sh"
             }
         }
     }

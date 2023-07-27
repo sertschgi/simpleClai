@@ -35,12 +35,17 @@ class NoSuchModelError : public ProfileError
 public:
     const char* what() const noexcept override;
 };
+class SA_PROFILE_ERROR : public ProfileError
+{
+public:
+    const char* what() const noexcept override;
+};
 
 void createProfile
     (
     const QString& name,
-    const QString& scope,
-    const QString& framework
+    const QString& framework,
+    const QString& scope
     );
 
 void list();

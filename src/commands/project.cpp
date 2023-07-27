@@ -81,7 +81,12 @@ void project::createProject
     const QJsonObject& jsonFrameworks = tools::getJsonObject("./config/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
-    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonProject) << "\033[0m";
+    QMap<QString, QString> replacements;
+    replacements.insert("$NAME", name);
+
+    const QString& script = tools::interpretPath(jsonProject["install_script"].toString(), replacements);
+
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script) << "\033[0m";
 
     jsonProjects[name] = newProject;
 
@@ -92,5 +97,5 @@ void project::list()
 {
     QJsonObject jsonProjects = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/projects.json");
 
-    qInfo() << tools::list(jsonProjects);
+    qInfo().noquote() << tools::list(jsonProjects).toUtf8();
 }

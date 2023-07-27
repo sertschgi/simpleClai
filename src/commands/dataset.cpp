@@ -85,12 +85,14 @@ void dataset::createDataset
             datasetPath = "/home/" + username + "/.simpleCLai/datasets";
         } */
 
-        datasetPath = appConfigPath + "/datasets/" + name;
+        datasetPath = appConfigPath + "/datasets";
 
         qInfo() << error.what() << "\033[36m"
                 << "Default:" << datasetPath
                 << "\033[0m";
     }
+
+    datasetPath = datasetPath + "/" + name;
 
     qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
 
@@ -132,5 +134,5 @@ void dataset::list()
 {
     const QJsonObject& jsonDatasets = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/datasets.json");
 
-    qInfo() << tools::list(jsonDatasets);
+    qInfo().noquote() << tools::list(jsonDatasets).toUtf8();
 }

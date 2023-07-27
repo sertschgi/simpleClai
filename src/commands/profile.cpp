@@ -33,12 +33,16 @@ const char* profile::NoSuchModelError::what() const noexcept
 {
     return "\033[31m[ERROR] <FATAL>: There is no such Model available!\033[0m";
 }
+const char* profile::SA_PROFILE_ERROR::what() const noexcept
+{
+    return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
+}
 
 void profile::createProfile
     (
     const QString& name,
-    const QString& scope,
-    const QString& framework
+    const QString& framework,
+    const QString& scope
     )
 {
     using namespace::std;
@@ -59,18 +63,39 @@ void profile::createProfile
         throw profile::NoSuchFrameworkError();
     }
 
-    const QJsonObject& jsonScopes = jsonFrameworks[framework][scope].toObject();
+    qDebug() << "\033[90m[DEBUG]: Scope is:" << scope << "\033[0m";
 
-    if (!jsonProfiles.contains(scope))
+    const QJsonObject& jsonScopes = jsonFrameworks[framework].toObject();
+
+    qDebug() << "\033[90m[DEBUG]: Json-scopes is:" << jsonScopes << "\033[0m";
+
+    if (!jsonScopes.contains(scope))
     {
         throw profile::NoSuchScopeError();
     }
 
+    const QJsonObject& jsonScope = jsonScopes[scope].toObject();
+
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    const QString& profilePath = env.value("$SA_PROFILE_PATH") + name;
+    QString profilePath = env.value("$SA_PROFILE_PATH");
 
-    const QString& apiPath = profilePath + "api";
+    if (profilePath.isEmpty())
+    {
+        profile::SA_PROFILE_ERROR error;
+
+        profilePath = appConfigPath + "/profiles";
+
+        qInfo() << error.what() << "\033[36m"
+                << "Default:" << profilePath
+                << "\033[0m";
+    }
+
+    profilePath = profilePath + "/" + name;
+
+    qInfo() << "\033[32m[INFO]: Your profile will be stored in:\033[35m" << profilePath << "\033[0m";
+
+    const QString& apiPath = profilePath + "/api";
 
     QMap<QString, QString> replacements;
     replacements.insert("$NAME", name);
@@ -86,9 +111,11 @@ void profile::createProfile
     newProfile["api_path"] = apiPath;
     newProfile["interpreter"] = pythonPath;
 
-    const QJsonObject& jsonProfile = jsonScopes["profile"].toObject();
+    const QJsonObject& jsonProfile = jsonScope["profile"].toObject();
 
-    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonProfile) << "\033[0m";
+    const QString& script = tools::interpretPath(jsonProfile["install_script"].toString(), replacements);
+
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script) << "\033[0m";
 
     jsonProfiles[name] = newProfile;
 
@@ -99,7 +126,7 @@ void profile::list()
 {
     const QJsonObject& jsonProfiles = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/profiles.json");
 
-    qInfo() << tools::list(jsonProfiles);
+    qInfo().noquote() << tools::list(jsonProfiles).toUtf8();
 }
 
 

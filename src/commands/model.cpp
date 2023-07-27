@@ -73,7 +73,12 @@ void model::createModel
     
     const QJsonObject& jsonModel = jsonModels[model].toObject();
 
-    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(jsonModel) << "\033[0m";
+    QMap<QString, QString> replacements;
+    replacements.insert("$NAME", name);
+
+    const QString& script = tools::interpretPath(jsonModel["install_script"].toString(), replacements);
+
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script) << "\033[0m";
 
     QJsonObject newModel;
 

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <exception>
 
+#include <QCoreApplication>
 #include <QString>
 #include <QFile>
 #include <QJsonDocument>
@@ -43,13 +44,13 @@ void updateProgressBar
 
 QString installProcess
     (
-    const QJsonObject& object
+    const QString& script
     );
 
 QString interpretPath
     (
         const QString& path,
-        const QMap<QString, QString>& replacements
+    QMap<QString, QString> replacements = {}
     );
 
 const QString list

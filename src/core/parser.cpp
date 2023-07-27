@@ -226,9 +226,9 @@ void clparser::parseArgs
         parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list [...]");
 
         QCommandLineOption listDatasetsOption({"d", "datasets"}, "List the datasets.");
-        QCommandLineOption listProfilesOption({"f", "profiles"}, "List the profiles.");
+        QCommandLineOption listProfilesOption({"r", "profiles"}, "List the profiles.");
         QCommandLineOption listProjectsOption({"p", "projects"}, "List the projects.");
-        QCommandLineOption listFrameworksOption({"p", "frameworks"}, "List the frameworks.");
+        QCommandLineOption listFrameworksOption({"f", "frameworks"}, "List the frameworks.");
 
         QList<QCommandLineOption> optionsList;
         optionsList << listDatasetsOption << listProfilesOption << listProjectsOption << listFrameworksOption;

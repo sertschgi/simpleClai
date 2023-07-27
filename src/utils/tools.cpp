@@ -157,21 +157,17 @@ int tools::copyFilesWithExtention
 
 QString tools::installProcess
     (
-    const QJsonObject& object
+    const QString& script
     )
 {
-    const QString& script = object["install_script"].toString();
-
-    QString terminal;
-
-    if (object.contains("install_terminal"))
+    if (!QFile::exists(script))
     {
-        terminal = object["install_terminal"].toString();
+        qFatal() << "\033[31m[ERROR] <FATAL>: Could not find script! Path:" << script << "\033[0m";
     }
-    else
-    {
-        terminal = "/bin/bash";
-    }
+
+    qDebug() << "\033[90m[DEBUG]: Using script:" << script << "\033[0m";
+
+    QString terminal = "/bin/bash";
 
     QProcess installationProcess;
 
@@ -188,9 +184,11 @@ QString tools::installProcess
 QString tools::interpretPath
     (
     const QString& path,
-    const QMap<QString, QString>& replacements
+    QMap<QString, QString> replacements
     )
 {
+    replacements.insert("$APP_SCRIPTS_PATH", QString("/etc/" + QCoreApplication::applicationName()));
+
     QString result = path;
 
     for (auto it = replacements.constBegin(); it != replacements.constEnd(); ++it)
@@ -208,26 +206,33 @@ const QString tools::list
 {
     QString outStr;
 
-    for (const QJsonValueConstRef refChildObject : object)
+    if (!object.isEmpty())
     {
-        if (refChildObject.isObject())
+        for (const QString& objectName : object.keys())
         {
-            QJsonObject childObject = refChildObject.toObject();
+            QJsonObject childObject = object.value(objectName).toObject();
 
-            outStr += childObject.keys()[0] + "\n"
+            outStr += "[" + objectName + "]\n"
                 + "  |" + "\n";
 
-            for (QString key : childObject.keys())
+            for (const QString& childObjectName : childObject.keys())
             {
-                outStr  += "  |--" + key + "-> ";
-
-                if (childObject[key].isObject())
+                if (!childObject.value(childObjectName).isObject())
                 {
-                    outStr += tools::list(childObject[key].toObject());
+                    outStr += "  |--(" + childObjectName + ")-->" + childObject.value(childObjectName).toString() + "\n";
+                }
+                else
+                {
+                    outStr += "  |--[" + childObjectName + "]-+\n";
                 }
             }
+            outStr += QString() + "  |" + "\n";
         }
-
+        outStr += QString() +  "  °" + "\n";
+    }
+    else
+    {
+        qInfo() << "\033[32m[INFO]: Nothing to list.\033[0m";
     }
     return outStr;
 }

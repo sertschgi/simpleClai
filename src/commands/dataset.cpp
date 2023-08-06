@@ -1,5 +1,6 @@
 #include "dataset.h"
 #include "../utils/tools.h"
+#include "../utils/errors.h"
 
 #include <iostream>
 #include <cstdint>
@@ -15,30 +16,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QProcessEnvironment>
-
-const char* dataset::DatasetNameError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: Dataset has the same name as an other one!\033[0m";
-}
-
-const char* dataset::SA_DATASET_ERROR::what() const noexcept
-{
-    return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
-}
-
-const char* dataset::LabelExtentionError::what() const noexcept
-{
-    QSettings settings("/etc/" + QCoreApplication::applicationName() +"/config/config.ini", QSettings::IniFormat);
-    QStringList formats = settings.value("dataset/supported_labeling_formats").toStringList();
-    return ("\033[31m[ERROR] <FATAL>: No files found! Probably wrong path or unsupported labeling format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
-}
-
-const char* dataset::ImageExtentionError::what() const noexcept
-{
-    QSettings settings("/etc/" + QCoreApplication::applicationName() + "/config/config.ini", QSettings::IniFormat);
-    QStringList formats = settings.value("dataset/supported_img_formats").toStringList();
-    return ("\033[31m[ERROR] <FATAL>: No files found! Probably wrong path or unsupported image format. Currently supported formats: " + formats.join(", ") + "\033[0m").toUtf8().constData();
-}
 
 void dataset::createDataset
     (
@@ -57,7 +34,7 @@ void dataset::createDataset
 
     if (jsonDatasets.contains(name))
     {
-        throw dataset::DatasetNameError();
+        throw error::name::DatasetNameError();
     }
 
 
@@ -67,7 +44,7 @@ void dataset::createDataset
 
     if (datasetPath.isEmpty())
     {
-        dataset::SA_DATASET_ERROR error;
+        error::environment::SA_DATASET_Error error;
 
         /* QString username = qgetenv("USER");
         if (username.isEmpty())
@@ -105,14 +82,14 @@ void dataset::createDataset
 
     if (tools::copyFilesWithExtention(labelsPath,newLabelsPath,label_formats) == 0)
     {
-        throw dataset::LabelExtentionError();
+        throw error::compatibility::LabelExtentionError();
     }
 
     QStringList img_formats = settings.value("dataset/supported_img_formats").toStringList();
 
     if (tools::copyFilesWithExtention(imagesPath,newImagesPath,img_formats) == 0)
     {
-        throw dataset::ImageExtentionError();
+        throw error::compatibility::ImageExtentionError();
     }
 
     const QString& newLabelmapPath = datasetPath + "/annotations/labelmap.pbtxt";

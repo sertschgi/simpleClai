@@ -12,13 +12,9 @@
 #include <QDebug>
 #include <QProcess>
 #include <QMap>
+#include <QStandardPaths>
 #include <QResource>
 
-
-const char* tools::NoSuchProfileError::what() const noexcept
-{
-    return "There is no such Profile available!";
-}
 
 QJsonObject tools::getJsonObject
     (
@@ -84,12 +80,33 @@ void tools::updateProgressBar
     const int barWidth = 40;
     int completedWidth = barWidth * progress / total;
 
-    qInfo() << "\033[34m[PROGRESS]:"
+    qInfo().noquote() << "\r\033[K\033[34m[PROGRESS]:"
              << (QString("[%1%2] %3\%").arg(QString(completedWidth, '#'),
-                                           QString(barWidth - completedWidth, ' '),
+                                           QString(barWidth - completedWidth, '.'),
                                            QString::number(100 * progress / total)
                                            )).toLocal8Bit().data()
              << "\033[0m";
+}
+
+void tools::createPath
+    (
+    const QString& path
+    )
+{
+    QDir destination(path);
+
+    if (!destination.exists())
+    {
+        qCritical() << "\033[36m[ALERT]: Could not find the" << path << "directory. Creating a new one.\033[0m";
+
+        if (destination.mkpath(path))
+        {
+            qInfo() << "\033[32m[INFO]: Successfully created directory!\033[0m";
+        } else
+        {
+            qFatal() << "\033[31m[ERROR] <FATAL>: Failed to create directory!\033[0m";
+        }
+    }
 }
 
 int tools::copyFilesWithExtention
@@ -99,20 +116,7 @@ int tools::copyFilesWithExtention
     const QStringList& extensions
     )
 {
-    QDir destination(destDir);
-
-    if (!destination.exists())
-    {
-        qCritical() << "\033[36m[ALERT]: Could not find the" << destDir << "directory. Creating a new one.\033[0m";
-
-        if (destination.mkpath(destDir))
-        {
-            qInfo() << "\033[32m[INFO]: Successfully created directory!\033[0m";
-        } else
-        {
-            qFatal() << "\033[31m[ERROR] <FATAL>: Failed to create directory!\033[0m";
-        }
-    }
+    tools::createPath(destDir);
 
     QDir directory(sourceDir);
 
@@ -157,28 +161,78 @@ int tools::copyFilesWithExtention
 
 QString tools::installProcess
     (
-    const QString& script
+    const QString& script,
+    const QStringList& envVars
     )
 {
-    if (!QFile::exists(script))
+    QStringList scriptParts = script.split(" ");
+    QString standaloneScript = scriptParts.first();
+
+    if (!QFile::exists(standaloneScript) || standaloneScript == "")
     {
-        qFatal() << "\033[31m[ERROR] <FATAL>: Could not find script! Path:" << script << "\033[0m";
+        qFatal() << "\033[31m[ERROR] <FATAL>: Could not find script! Path:" << standaloneScript << "\033[0m";
     }
 
+    qDebug() << "\033[90m[DEBUG]: Using standalone script:" << standaloneScript << "\033[0m";
     qDebug() << "\033[90m[DEBUG]: Using script:" << script << "\033[0m";
 
     QString terminal = "/bin/bash";
 
+    QStringList arguments;
+    arguments << "-i" << "-c" << "source " + script;
+
+    qDebug() << "\033[90m[DEBUG]: Using arguments:" << arguments << "\033[0m";
+
+    QFile::setPermissions(standaloneScript, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
+
     QProcess installationProcess;
 
-    QStringList arguments; arguments << script;
+    installationProcess.setEnvironment(envVars);
+
+    const QString& workDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)+"/."+QCoreApplication::applicationName()+"/tmp";
+    tools::createPath(workDir);
+
+    installationProcess.setWorkingDirectory(workDir);
+
+    qDebug() << "\033[90m[DEBUG]: Work dir:" << installationProcess.workingDirectory() << "\033[0m";
 
     installationProcess.start(terminal, arguments);
-    installationProcess.waitForFinished();
 
-    QByteArray output = installationProcess.readAllStandardOutput();
-    QString qoutput = QString::fromUtf8(output);
-    return qoutput;
+    qInfo() << "\033[32m[INFO]: Live output:\033[90m";
+
+    // QString pattern = "\\n *\\d+ +\\d+M +([0-9]+)";
+    // QString condaProgressPattern = " *([0-9]+) *\\d+M";
+
+    int errorCount = 0;
+
+    QObject::connect(
+        &installationProcess,
+        &QProcess::readyReadStandardOutput,
+        [&]() {
+            QByteArray outputData = installationProcess.readAllStandardOutput();
+            qDebug().noquote() << "\033[35m[SCRIPT_INFO]:" << outputData.toStdString() << "\033[90m";
+        });
+
+    QObject::connect(
+        &installationProcess,
+        &QProcess::readyReadStandardError,
+        [&]() {
+            QString errorData = QString::fromUtf8(installationProcess.readAllStandardError());
+            qCritical().noquote() << errorData;
+            if (errorData.contains("error",Qt::CaseInsensitive))
+            {
+                errorCount += 1;
+            }
+        });
+
+    qInfo() << "\033[0m";
+
+    if (installationProcess.waitForFinished(-1) && errorCount == 0)
+    {
+        QByteArray output = installationProcess.readAllStandardOutput();
+        return QString(output);
+    }
+    qFatal() << "\033[31m[ERROR] <FATAL>: Script errored! Count(" << errorCount << "):" << installationProcess.readAllStandardError() << "\033[0m";
 }
 
 QString tools::interpretPath

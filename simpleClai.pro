@@ -11,9 +11,9 @@ SOURCES += \
         src/commands/profile.cpp \
         src/commands/project.cpp \
         src/commands/frameworks.cpp\
-        src/core/parser.cpp \
-        src/utils/tools.cpp
-
+        src/core/parser.cpp \       
+        src/utils/tools.cpp \
+        src/utils/errors.cpp
 
 HEADERS += \
         src/commands/dataset.h \
@@ -22,7 +22,8 @@ HEADERS += \
         src/commands/project.h \
         src/commands/frameworks.h \
         src/core/parser.h \
-        src/utils/tools.h
+        src/utils/tools.h \
+        src/utils/errors.h
 
 # Following two blocks are for 'make install'.
 # Those will not be needed for (deb) packages as only 'make' is used.

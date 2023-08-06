@@ -1,5 +1,6 @@
 #include "profile.h"
 #include "../utils/tools.h"
+#include "../utils/errors.h"
 
 #include <iostream>
 #include <cstdint>
@@ -14,29 +15,6 @@
 #include <QJsonObject>
 #include <QProcessEnvironment>
 
-const char* profile::ProfileNameError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: Profile has the same name as an other one!\033[0m";
-}
-
-const char* profile::NoSuchScopeError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such scope available!\033[0m";
-}
-
-const char* profile::NoSuchFrameworkError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such Framework available!\033[0m";
-}
-
-const char* profile::NoSuchModelError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such Model available!\033[0m";
-}
-const char* profile::SA_PROFILE_ERROR::what() const noexcept
-{
-    return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
-}
 
 void profile::createProfile
     (
@@ -53,14 +31,14 @@ void profile::createProfile
 
     if (jsonProfiles.contains(name))
     {
-        throw profile::ProfileNameError();
+        throw error::name::ProfileNameError();
     }
 
     const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
 
     if (!jsonFrameworks.contains(framework))
     {
-        throw profile::NoSuchFrameworkError();
+        throw error::existence::NoSuchFrameworkError();
     }
 
     qDebug() << "\033[90m[DEBUG]: Scope is:" << scope << "\033[0m";
@@ -71,51 +49,56 @@ void profile::createProfile
 
     if (!jsonScopes.contains(scope))
     {
-        throw profile::NoSuchScopeError();
+        throw error::existence::NoSuchScopeError();
     }
 
     const QJsonObject& jsonScope = jsonScopes[scope].toObject();
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    QString profilePath = env.value("$SA_PROFILE_PATH");
+    QString profilePath = env.value("PROFILE_PATH");
 
     if (profilePath.isEmpty())
     {
-        profile::SA_PROFILE_ERROR error;
+        error::environment::SA_PROFILE_Error error;
 
         profilePath = appConfigPath + "/profiles";
 
         qInfo() << error.what() << "\033[36m"
                 << "Default:" << profilePath
                 << "\033[0m";
+
+        // set the $SA_PROFILE_PATH for debian
+        qDebug() << "\033[90m[DEBUG]: Script executed with output:"
+                 << tools::installProcess("/etc/" + QCoreApplication::applicationName() + "/scripts/set_debian_env.sh PROFILE_PATH " + profilePath)
+                 << "\033[0m";
     }
 
-    profilePath = profilePath + "/" + name;
+    const QString& thisProfilePath = profilePath + "/" + name;
 
-    qInfo() << "\033[32m[INFO]: Your profile will be stored in:\033[35m" << profilePath << "\033[0m";
+    qInfo() << "\033[32m[INFO]: Your profile will be stored in:\033[35m" << thisProfilePath << "\033[0m";
 
-    const QString& apiPath = profilePath + "/api";
+    const QString& apiPath = thisProfilePath + "/api";
 
     QMap<QString, QString> replacements;
     replacements.insert("$NAME", name);
     replacements.insert("$API_PATH", apiPath);
 
-    const QString& pythonPath = tools::interpretPath(jsonScopes["interpreter"].toString(), replacements);
+    // const QString& pythonPath = tools::interpretPath(jsonScopes["interpreter"].toString(), replacements);
 
     QJsonObject newProfile;
 
     newProfile["scope"] = scope;
     newProfile["framework"] = framework;
-    newProfile["profile_path"] = profilePath;
+    newProfile["profile_path"] = thisProfilePath;
     newProfile["api_path"] = apiPath;
-    newProfile["interpreter"] = pythonPath;
+    // newProfile["interpreter"] = pythonPath;
 
     const QJsonObject& jsonProfile = jsonScope["profile"].toObject();
 
     const QString& script = tools::interpretPath(jsonProfile["install_script"].toString(), replacements);
 
-    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script) << "\033[0m";
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script, QStringList() << QString("PROFILE_PATH=") + profilePath) << "\033[0m";
 
     jsonProfiles[name] = newProfile;
 

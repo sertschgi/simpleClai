@@ -44,18 +44,24 @@ void updateProgressBar
 
 QString installProcess
     (
-    const QString& script
+    const QString& script,
+    const QStringList& envVars = QStringList()
     );
 
 QString interpretPath
     (
-        const QString& path,
+    const QString& path,
     QMap<QString, QString> replacements = {}
     );
 
 const QString list
     (
     const QJsonObject& object
+    );
+
+void createPath
+    (
+        const QString& path
     );
 }
 

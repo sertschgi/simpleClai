@@ -10,37 +10,6 @@
 
 namespace project
 {
-class ProjectError : public std::exception
-{
-public:
-    virtual const char* what() const noexcept = 0;
-};
-class ProjectNameError : public ProjectError
-{
-public:
-    const char* what() const noexcept override;
-};
-class NoSuchProfileError : public ProjectError
-{
-public:
-    const char* what() const noexcept override;
-};
-class NoSuchModelError : public ProjectError
-{
-public:
-    const char* what() const noexcept override;
-};
-class NoSuchDatasetError : public ProjectError
-{
-public:
-    const char* what() const noexcept override;
-};
-class DatasetNotCompatibleLabelsError : public ProjectError
-{
-public:
-    const char* what() const noexcept override;
-};
-
 void createProject
     (
     const QString& name,
@@ -55,7 +24,5 @@ void init_tf_object_detection
 
 void list();
 }
-
-
 
 #endif // PROJECT_H

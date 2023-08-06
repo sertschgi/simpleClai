@@ -6,6 +6,8 @@
 #include "../commands/project.h"
 #include "../commands/frameworks.h"
 
+#include "../utils/errors.h"
+
 #include <QDebug>
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -68,7 +70,7 @@ void clparser::parseArgs
                 parser.value(datsetLabelPathOption)
                 );
             }
-            catch (const dataset::DatasetError& Error)
+            catch (const error::GeneralError& Error)
             {
             qFatal() << Error.what();
             }
@@ -103,7 +105,7 @@ void clparser::parseArgs
                 parser.value(profileScopeOption)
                 );
             }
-            catch (const profile::ProfileError& Error)
+            catch (const error::GeneralError& Error)
             {
             qFatal() << Error.what();
             }
@@ -138,7 +140,7 @@ void clparser::parseArgs
                 parser.value(projectDatasetOption)
                 );
             }
-            catch (const project::ProjectError& Error)
+            catch (const error::GeneralError& Error)
             {
             qFatal() << Error.what();
             }
@@ -174,7 +176,7 @@ void clparser::parseArgs
                 parser.value(modelModelOption)
                 );
             }
-            catch (const model::ModelError& Error)
+            catch (const error::GeneralError& Error)
             {
             qFatal() << Error.what();
             }
@@ -214,7 +216,7 @@ void clparser::parseArgs
             parser.value(trainProjectOption)
             );
         // }
-        // catch (const model::TrainError& Error) <-- todo: implement this
+        // catch (const error::GeneralError& Error) <-- todo: implement this
         // {
         // qFatal() << Error.what();
         // }

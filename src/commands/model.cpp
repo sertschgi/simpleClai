@@ -2,6 +2,7 @@
 
 #include "model.h"
 #include "../utils/tools.h"
+#include "../utils/errors.h"
 
 #include <iostream>
 #include <cstdint>
@@ -12,23 +13,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
-
-
-const char* model::ModelNameError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: Model has the same name as an other one!\033[0m";
-}
-
-const char* model::NoSuchModelError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: here is no such Model available!\033[0m";
-}
-
-const char* model::NoSuchProjectError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such Project available!\033[0m";
-}
-
+#include <QDir>
 
 void model::createModel
     (
@@ -39,42 +24,48 @@ void model::createModel
 {
     using namespace::std;
 
-    QJsonObject jsonProjects = tools::getJsonObject("./config/projects");
+    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
+
+    QJsonObject jsonProjects = tools::getJsonObject(appConfigPath + "/config/projects.json");
 
     if (!jsonProjects.contains(project))
     {
-        throw model::NoSuchProjectError();
+        throw error::existence::NoSuchProjectError();
     }
 
     QJsonObject jsonProject = jsonProjects[project].toObject();
 
     QJsonObject jsonUserModels = jsonProject["models"].toObject();
 
-    if (!jsonUserModels.contains(model))
+    if (jsonUserModels.contains(model))
     {
-        throw model::ModelNameError();
+        throw error::name::ModelNameError();
     }
 
     const QString& profile = jsonProject["profile"].toString();
-    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/profiles");
+    const QJsonObject& jsonProfiles = tools::getJsonObject(appConfigPath + "/config/profiles.json");
     const QJsonObject& jsonProfile = jsonProfiles[profile].toObject();
 
     const QString& scope = jsonProfile["scope"].toString();
     const QString& framework = jsonProfile["framework"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/framework");
-    const QJsonObject& jsonScope = jsonFrameworks[framework][scope].toObject();
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
+    const QJsonObject& jsonScope = jsonFrameworks[framework].toObject()[scope].toObject();
     const QJsonObject& jsonModels = jsonScope["models"].toObject();
 
     if (!jsonModels.contains(model))
     {
-        throw model::NoSuchModelError();
+        throw error::existence::NoSuchModelError();
     }
     
     const QJsonObject& jsonModel = jsonModels[model].toObject();
 
+    const QString& projectPath = jsonProject["project_path"].toString();
+    const QString& modelPath = projectPath + "/models/" + name;
+
     QMap<QString, QString> replacements;
     replacements.insert("$NAME", name);
+    replacements.insert("$MODEL_PATH", modelPath);
 
     const QString& script = tools::interpretPath(jsonModel["install_script"].toString(), replacements);
 
@@ -83,8 +74,10 @@ void model::createModel
     QJsonObject newModel;
 
     newModel["model"] = model;
+    newModel["model_path"] = modelPath;
+
     jsonProjects[project].toObject()["models"].toObject()[name].toObject() = newModel;
-    tools::writeJson("../../config/projects", jsonProjects);
+    tools::writeJson(appConfigPath + "/config/projects.json", jsonProjects);
 }
 
 void model::trainModel
@@ -93,27 +86,29 @@ void model::trainModel
     const QString& project
     )
 {
-    QJsonObject jsonProjects = tools::getJsonObject("../../config/projects");
+    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
+
+    QJsonObject jsonProjects = tools::getJsonObject(appConfigPath + "/config/projects.json");
 
     if (!jsonProjects.contains(project))
     {
-        throw model::NoSuchProjectError();
+        throw error::existence::NoSuchProjectError();
     }
 
     QJsonObject jsonProject = jsonProjects[project].toObject();
 
     if (!jsonProjects["models"].toObject().contains(name))
     {
-        throw model::NoSuchModelError();
+        throw error::existence::NoSuchModelError();
     }
     const QString& profile = jsonProject["profile"].toString();
-    const QJsonObject& jsonProfiles = tools::getJsonObject("../../config/profiles");
+    QJsonObject jsonProfiles = tools::getJsonObject(appConfigPath + "/config/profiles.json");
     const QJsonObject& jsonProfile = jsonProfiles[profile].toObject();
 
     const QString& scope = jsonProfile["scope"].toString();
     const QString& framework = jsonProfile["framework"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("../../config/framework");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
     const QJsonObject& jsonScope = jsonFrameworks[framework][scope].toObject();
 
     Py_Initialize();

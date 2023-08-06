@@ -1,5 +1,6 @@
 #include "project.h"
 #include "../utils/tools.h"
+#include "../utils/errors.h"
 
 #include <iostream>
 #include <cstdint>
@@ -17,25 +18,6 @@
 #include <QJsonObject>
 #include <QMap>
 
-const char* project::ProjectNameError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: Project has the same name as an other one!\033[0m";
-}
-
-const char* project::NoSuchModelError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such Model available!\033[0m";
-}
-
-const char* project::NoSuchDatasetError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: There is no such Dataset available!\033[0m";
-}
-
-const char* project::DatasetNotCompatibleLabelsError::what() const noexcept
-{
-    return "\033[31m[ERROR] <FATAL>: The labels of the dataset provided are not compatible with the labels required for the profile given.\033[0m";
-}
 
 void project::createProject
     (
@@ -46,43 +28,50 @@ void project::createProject
 {
     using namespace::std;
 
-    const QJsonObject& jsonProfiles = tools::getJsonObject("./config/projects.json");
+    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
+
+    QJsonObject jsonProfiles = tools::getJsonObject(appConfigPath + "/config/profiles.json");
 
     if (!jsonProfiles.contains(profile))
     {
-        throw tools::NoSuchProfileError();
+        throw error::existence::NoSuchProfileError();
     }
 
     QJsonObject jsonProfile = jsonProfiles[profile].toObject();
 
 
-    QJsonObject jsonProjects = tools::getJsonObject("./config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject(appConfigPath + "/config/projects.json");
 
     if (jsonProjects.contains(name))
     {
-        throw project::ProjectNameError();
+        throw error::name::ProjectNameError();
     }
 
-    const QJsonObject& jsonDatasets = tools::getJsonObject("./config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject(appConfigPath + "/config/datasets.json");
 
     if (!jsonDatasets.contains(dataset))
     {
-        throw project::NoSuchDatasetError();
+        throw error::existence::NoSuchDatasetError();
     }
+
+    const QString& profilePath = jsonProfile["profile_path"].toString();
+    const QString& projectPath = profilePath + "/projects/" + name;
 
     QJsonObject newProject;
 
     newProject["profile"] = profile;
     newProject["dataset"] = dataset;
+    newProject["project_path"] = projectPath;
 
     const QString& framework = jsonProfile["framework"].toString();
     const QString& scope = jsonProfile["scope"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("./config/frameworks.json");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
     QMap<QString, QString> replacements;
     replacements.insert("$NAME", name);
+    replacements.insert("$PROFILE_PATH", profilePath);
 
     const QString& script = tools::interpretPath(jsonProject["install_script"].toString(), replacements);
 
@@ -90,7 +79,7 @@ void project::createProject
 
     jsonProjects[name] = newProject;
 
-    tools::writeJson("./config/projects.json", jsonProjects);
+    tools::writeJson(appConfigPath + "/config/projects.json", jsonProjects);
 }
 
 void project::list()

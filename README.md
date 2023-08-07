@@ -1,3 +1,4 @@
+
 # What is SimpleClai?
 
 SimpleCommandLineAI, SimpleClai or sclai for short aims to automate the machine learning workflow. This is the command line version of SimpleAi (comming soon). Currently it is focused on easy setup of the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection#tensorflow-object-detection-api) and training of its models respectively.
@@ -7,121 +8,116 @@ SimpleCommandLineAI, SimpleClai or sclai for short aims to automate the machine 
 
 
 # Installation
-Downlaod the .deb file from the latest release in the [release](https://github.com/sertschgi/simpleClai/releases) page.
+**Download** the .deb file from the latest release in the [releases](https://github.com/sertschgi/simpleClai/releases) page. 
 
+- Option 1: 
+	1. **Click** on the downloaded file. 
+	2. **Open** with your installation App. *(Software Center in Ubuntu)*
+	3. **Click** *install*.
+
+- Option 2: 
+	1. **Open** a terminal.
+	2. `cd Downloads`
+	3. `sudo dpkg -i sclai.deb`
 
 # Usage
+> **Note:** You might want to read [Workflows](#Workflows) first.
+
+    sclai [options] command
+
+Always available **options** are:
+| | |
+|--|--|
+| `-h`, `--help` | `Displays help on commandline options.` |
+| `-v`, `--version` | `Displays version information.` |
+
+## Commands
+
+### - create
+    sclai create [options] command
+
+> **Note:** All data created by the user is usually saved in `~/.sclai`.  [More](#DataSaving#Paths) about saved data.
+
+#### Available commands are:
+***
+#### - dataset
+
+    sclai create dataset [options]
+
+Available **options** are:
+| | | |
+|--|--|--|
+| `-n`, `--name` | `Specify the name of your dataset.` | *required* |
+| `-l`, `--labels` | `Specify the path of your labelmap.pbtxt` | *required* |
+| `-a`, `--labels_path` | `Specify the label path` | *required* |
+| `-m`, `--images_path` | `Specify the images path` | *required* |
+
+Example:
+
+    sclai create dataset -n mydataset -l path/to/my/labelmap.pbtxt -a path/to/my/labels -m path/to/my/images 
+
+> **Note:** Supported label formats: xml, csv. Xml files need to be provided for each image with the same name. When using a csv file only one file is supported. [More](#Labeling#Formats) about labeling.
+
+***
+#### - profile
+
+    sclai create profile [options]
+ 
+Available **options** are:
+| | | |
+|--|--|--|
+| `-n`, `--name` | `Specify the name of your profile.` | *required* |
+| `-f`, `--framework` | `Specify the framework you want to use` | *required* |
+| `-s`, `--scope` | `Specify which field of machine learning you want to use` | *required* |
+
+Example:
+
+    sclai create profile -n myprofile -f tensorflow -s object_detection 
+
+> **Note:** *Framework* and *scope* are usually defined in `/etc/sclai/config/frameworks.json`. This file contains all setup information. You can also [add your own custom framework](#CustomFrameworks) or adjust the existing.
+
+***
+#### - project
+
+    sclai create project [options]
+ 
+Available **options** are:
+
+| | | |
+|--|--|--|
+| `-n`, `--name` | `Specify the name of your project.` | *required* |
+| `-p`, `--profile` | `Specify the profile you want to use` | *required* |
+| `-d`, `--dataset` | `Specify the dataset you want to use` | *required* |
+
+Example:
+
+    sclai create project -n myproject -p myprofile -d mydataset
+
+***
+#### - model
+
+    sclai create model [options]
+ 
+Available **options** are:
+| | | |
+|--|--|--|
+| `-n`, `--name` | `Specify the name of your model.` | *required* |
+| `-p`, `--project` | `Specify the project you want to use` | *required* |
+| `-m`, `--model` | `Specify the model you want to use` | *required* |
+
+Example:
+
+    sclai create model -n mymodel -p myproject -m "CenterNet MobileNetV2 FPN"
+
+***
+### - train
+    sclai train [options]
+Available **options** are:
+| | |
+|--|--|
+| `-h` | `shows help` |
 
 
-StackEdit stores your files in your browser, which means all your files are automatically saved locally and are accessible **offline!**
-
-## Create files and folders
-
-The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
-
-## Switch to another file
-
-All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
-
-## Rename a file
-
-You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
-
-## Delete a file
-
-You can delete the current file by clicking the **Remove** button in the file explorer. The file will be moved into the **Trash** folder and automatically deleted after 7 days of inactivity.
-
-## Export a file
-
-You can export the current file by clicking **Export to disk** in the menu. You can choose to export the file as plain Markdown, as HTML using a Handlebars template or as a PDF.
-
-
-# Synchronization
-
-Synchronization is one of the biggest features of StackEdit. It enables you to synchronize any file in your workspace with other files stored in your **Google Drive**, your **Dropbox** and your **GitHub** accounts. This allows you to keep writing on other devices, collaborate with people you share the file with, integrate easily into your workflow... The synchronization mechanism takes place every minute in the background, downloading, merging, and uploading file modifications.
-
-There are two types of synchronization and they can complement each other:
-
-- The workspace synchronization will sync all your files, folders and settings automatically. This will allow you to fetch your workspace on any other device.
-	> To start syncing your workspace, just sign in with Google in the menu.
-
-- The file synchronization will keep one file of the workspace synced with one or multiple files in **Google Drive**, **Dropbox** or **GitHub**.
-	> Before starting to sync files, you must link an account in the **Synchronize** sub-menu.
-
-## Open a file
-
-You can open a file from **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Open from**. Once opened in the workspace, any modification in the file will be automatically synced.
-
-## Save a file
-
-You can save any file of the workspace to **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Save on**. Even if a file in the workspace is already synced, you can save it to another location. StackEdit can sync one file with multiple locations and accounts.
-
-## Synchronize a file
-
-Once your file is linked to a synchronized location, StackEdit will periodically synchronize it by downloading/uploading any modification. A merge will be performed if necessary and conflicts will be resolved.
-
-If you just have modified your file and you want to force syncing, click the **Synchronize now** button in the navigation bar.
-
-> **Note:** The **Synchronize now** button is disabled if you have no file to synchronize.
-
-## Manage file synchronization
-
-Since one file can be synced with multiple locations, you can list and manage synchronized locations by clicking **File synchronization** in the **Synchronize** sub-menu. This allows you to list and remove synchronized locations that are linked to your file.
-
-
-# Publication
-
-Publishing in StackEdit makes it simple for you to publish online your files. Once you're happy with a file, you can publish it to different hosting platforms like **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **WordPress** and **Zendesk**. With [Handlebars templates](http://handlebarsjs.com/), you have full control over what you export.
-
-> Before starting to publish, you must link an account in the **Publish** sub-menu.
-
-## Publish a File
-
-You can publish your file by opening the **Publish** sub-menu and by clicking **Publish to**. For some locations, you can choose between the following formats:
-
-- Markdown: publish the Markdown text on a website that can interpret it (**GitHub** for instance),
-- HTML: publish the file converted to HTML via a Handlebars template (on a blog for example).
-
-## Update a publication
-
-After publishing, StackEdit keeps your file linked to that publication which makes it easy for you to re-publish it. Once you have modified your file and you want to update your publication, click on the **Publish now** button in the navigation bar.
-
-> **Note:** The **Publish now** button is disabled if your file has not been published yet.
-
-## Manage file publication
-
-Since one file can be published to multiple locations, you can list and manage publish locations by clicking **File publication** in the **Publish** sub-menu. This allows you to list and remove publication locations that are linked to your file.
-
-
-# Markdown extensions
-
-StackEdit extends the standard Markdown syntax by adding extra **Markdown extensions**, providing you with some nice features.
-
-> **ProTip:** You can disable any **Markdown extension** in the **File properties** dialog.
-
-
-## SmartyPants
-
-SmartyPants converts ASCII punctuation characters into "smart" typographic punctuation HTML entities. For example:
-
-|                |ASCII                          |HTML                         |
-|----------------|-------------------------------|-----------------------------|
-|Single backticks|`'Isn't this fun?'`            |'Isn't this fun?'            |
-|Quotes          |`"Isn't this fun?"`            |"Isn't this fun?"            |
-|Dashes          |`-- is en-dash, --- is em-dash`|-- is en-dash, --- is em-dash|
-
-
-## KaTeX
-
-You can render LaTeX mathematical expressions using [KaTeX](https://khan.github.io/KaTeX/):
-
-The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
-
-$$
-\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
-$$
-
-> You can find more information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
 
 
 ## UML diagrams

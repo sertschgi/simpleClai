@@ -82,9 +82,10 @@ void profile::createProfile
 
     QMap<QString, QString> replacements;
     replacements.insert("$NAME", name);
+    replacements.insert("$PROFILE_PATH", thisProfilePath);
     replacements.insert("$API_PATH", apiPath);
 
-    // const QString& pythonPath = tools::interpretPath(jsonScopes["interpreter"].toString(), replacements);
+    const QString& pythonPath = tools::interpretPath(jsonScopes["python_path"].toString(), replacements);
 
     QJsonObject newProfile;
 
@@ -92,7 +93,7 @@ void profile::createProfile
     newProfile["framework"] = framework;
     newProfile["profile_path"] = thisProfilePath;
     newProfile["api_path"] = apiPath;
-    // newProfile["interpreter"] = pythonPath;
+    newProfile["python_path"] = pythonPath;
 
     const QJsonObject& jsonProfile = jsonScope["profile"].toObject();
 

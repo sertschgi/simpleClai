@@ -1,7 +1,5 @@
-#ifndef FRAMEWORK_H
-#define FRAMEWORK_H
-
-#include "../utils/tools.h"
+#ifndef FRAMEWORKS_H
+#define FRAMEWORKS_H
 
 namespace frameworks
 {
@@ -10,4 +8,4 @@ void list
     );
 }
 
-#endif // FRAMEWORK_H
+#endif // FRAMEWORKS_H

@@ -19,4 +19,4 @@ namespace clparser
         );
 }
 
-#endif PARSER_H
+#endif // PARSER_H

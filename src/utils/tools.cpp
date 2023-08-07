@@ -80,12 +80,21 @@ void tools::updateProgressBar
     const int barWidth = 40;
     int completedWidth = barWidth * progress / total;
 
-    qInfo().noquote() << "\r\033[K\033[34m[PROGRESS]:"
-             << (QString("[%1%2] %3\%").arg(QString(completedWidth, '#'),
+    QString progressBar;
+
+    if (progress > 0)
+    {
+        progressBar += "\033[1A\033[K\033[s";
+    }
+
+    progressBar += "\033[34m[PROGRESS]:";
+    progressBar += (QString("[%1%2] %3\%").arg(QString(completedWidth, '#'),
                                            QString(barWidth - completedWidth, '.'),
                                            QString::number(100 * progress / total)
-                                           )).toLocal8Bit().data()
-             << "\033[0m";
+                                               )).toLocal8Bit().data();
+    progressBar += "\033[0m";
+
+    qInfo().noquote() << progressBar;
 }
 
 void tools::createPath

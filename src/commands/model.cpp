@@ -80,6 +80,8 @@ void model::createModel
     tools::writeJson(appConfigPath + "/config/projects.json", jsonProjects);
 }
 
+
+
 void model::trainModel
     (
     const QString& name,

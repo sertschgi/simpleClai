@@ -39,8 +39,8 @@ script_install.path = /etc/$${TARGET}/scripts
 script_install.files += scripts/*
 
 
-LIBS += -lpython3.11
-INCLUDEPATH += /usr/include/python3.11
+LIBS += -lpython3.10
+INCLUDEPATH += /usr/include/python3.10
 
 target.path = /usr/bin
 qnx: target.path = /tmp/$${TARGET}/bin

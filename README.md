@@ -1,13 +1,17 @@
 # What is SimpleClai?
 
-SimpleClai or sclai for short aims to automate the machine learning workflow. Currently it is focused on easy setup of the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection#tensorflow-object-detection-api) and training of its models respectively.
+SimpleCommandLineAI, SimpleClai or sclai for short aims to automate the machine learning workflow. This is the command line version of SimpleAi (comming soon). Currently it is focused on easy setup of the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection#tensorflow-object-detection-api) and training of its models respectively.
 > **Note:** SimpleClai currently only supports debain based linux distributions.
 
 > **Furthermore:** SimpleClai is still not finished and currently not working.
 
 
 # Installation
-Downlaod the
+Downlaod the .deb file from the latest release in the [release](https://github.com/sertschgi/simpleClai/releases) page.
+
+
+# Usage
+
 
 StackEdit stores your files in your browser, which means all your files are automatically saved locally and are accessible **offline!**
 

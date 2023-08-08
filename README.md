@@ -21,7 +21,7 @@ SimpleCommandLineAI, SimpleClai or sclai for short aims to automate the machine 
 	3. `sudo dpkg -i sclai.deb`
 
 # Usage
-> **Note:** You might want to read [Workflows](#Workflows) first.
+> **Note:** You might want to read [Workflow](#Workflow) first.
 
     sclai [options] command
 
@@ -67,8 +67,8 @@ Available **options** are:
 | | | |
 |--|--|--|
 | `-n`, `--name` | `Specify the name of your profile.` | *required* |
-| `-f`, `--framework` | `Specify the framework you want to use` | *required* |
-| `-s`, `--scope` | `Specify which field of machine learning you want to use` | *required* |
+| `-f`, `--framework` | `Specify the framework you want to use.` | *required* |
+| `-s`, `--scope` | `Specify which field of machine learning you want to use.` | *required* |
 
 Example:
 
@@ -86,8 +86,8 @@ Available **options** are:
 | | | |
 |--|--|--|
 | `-n`, `--name` | `Specify the name of your project.` | *required* |
-| `-p`, `--profile` | `Specify the profile you want to use` | *required* |
-| `-d`, `--dataset` | `Specify the dataset you want to use` | *required* |
+| `-p`, `--profile` | `Specify the profile you want to use.` | *required* |
+| `-d`, `--dataset` | `Specify the dataset you want to use.` | *required* |
 
 Example:
 
@@ -102,8 +102,8 @@ Available **options** are:
 | | | |
 |--|--|--|
 | `-n`, `--name` | `Specify the name of your model.` | *required* |
-| `-p`, `--project` | `Specify the project you want to use` | *required* |
-| `-m`, `--model` | `Specify the model you want to use` | *required* |
+| `-p`, `--project` | `Specify the project you want to use.` | *required* |
+| `-m`, `--model` | `Specify the model you want to use.` | *required* |
 
 Example:
 
@@ -113,35 +113,72 @@ Example:
 ### - train
     sclai train [options]
 Available **options** are:
-| | |
-|--|--|
-| `-h` | `shows help` |
+| | | |
+|--|--|--|
+| `-m`, `--model`  | `Specify the name of the model.` | *required* |
+| `-p`, `--project` | `Specify the project.` | *required* |
 
+Example:
 
+    sclai train -p myproject -m mymodel
 
+***
+### - list
+    sclai train [options]
+Available **options** are:
+| | | |
+|--|--|--|
+| `-d`, `--datasets` | `List the datasets.` |
+| `-r`, `--profiles` | `List the profiles.` |
+| `-p`, `--projects` | `List the projects.` | *default* |
+| `-f`, `--frameworks` | `List the frameworks.` |
 
-## UML diagrams
+Example:
 
-You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
+    sclai train -p myproject -m mymodel
 
-```mermaid
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+# Workflow
 
-Bob-->Alice: Checking with John...
-Alice->John: Yes... John, how are you?
-```
-
-And this will produce a flow chart:
+A typical workflow could look like this:
 
 ```mermaid
 graph LR
-A[Square Rect] -- Link text --> B((Circle))
-A --> C(Round Rect)
-B --> D{Rhombus}
-C --> D
+CD[create dataset] --> CPF[create profile] --> CPJ[create project] --> a[create model] --> T{train}
 ```
+**First** create a **dataset** from your labeled data. **Then** create a **profile**. This will install all apps needed for your training and set up a [conda](https://docs.conda.io/en/latest/) virtual environment to not interfere with your system. Both dataset and profile can of course be used for multiple projects. The **third** step is to create a **project** that contains your models. Now you can choose your **model** you want to use. There can also be multiple of the same type of model. **Finally** you can select a model and start **training**!
+
+# Intern
+## Data Saving
+The grid lists all the default paths:
+| | Path | Note |
+| - | - | - |
+| **app**: |
+| exec |  `/usr/bin/sclai` 
+| apps | `~/.sclai/profiles/apps` | *user specific*
+|**config**: |
+| frameworks | `/etc/sclai/config/frameworks.json`
+| data | `~/.sclai/config/` | *user specific*, *changeable*
+| datasets | `~/.sclai/config/datasets.json` | *user specific*
+| profiles | `~/.sclai/config/profiles.json` | *user specific*
+| projects | `~/.sclai/config/projects.json` | *user specific*
+| **data**: |
+| datasets | `~/.sclai/datasets` | *user specific*, *changeable*
+| profiles | `~/.sclai/profiles` | *user specific*, *changeable*
+| projects | `~/.sclai/profiles/projects` | *user specific*
+| models | `~/.sclai/profiles/projects/models` | *user specific*
+
+> **Note**: The model configuration is saved in `profiles.json`
+
+The **data**-config, **datasets** and **profiles** path are **changeable**. To change them just **set** the environment variables in your `~/bashrc` and `~/bash_profile` respectively. 
+
+Environment variables:
+| | | 
+| - | - | 
+| data | `$DATA_CONFIG_PATH` 
+| datasets | `$DATASET_PATH`
+| profiles | `$PROFILE_PATH` 
+
+Example:
+
+    echo "export PROFILE_PATH=/path/to/profiles" >> ~/.bashrc
+

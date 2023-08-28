@@ -1,5 +1,7 @@
 #include "tools.h"
 
+#include "../config/config.h"
+
 #include <string>
 #include <iostream>
 #include <exception>
@@ -250,7 +252,10 @@ QString tools::interpretPath
     QMap<QString, QString> replacements
     )
 {
-    replacements.insert("$APP_SCRIPTS_PATH", QString("/etc/" + QCoreApplication::applicationName()));
+    replacements.insert("%{APP_SCRIPTS_PATH}", APP_SCRIPTS_PATH);
+    // replacements.insert("%{APP_CONFIG_PATH}", APP_CONFIG_PATH);
+    // replacements.insert("%{USER_CONFIG_PATH}", USER_CONFIG_PATH);
+    replacements.insert("%{USER_SCRIPTS_PATH}", USER_SCRIPTS_PATH);
 
     QString result = path;
 
@@ -259,7 +264,7 @@ QString tools::interpretPath
         result.replace(it.key(), it.value());
     }
 
-    return result; // potential issue as well
+    return result;
 }
 
 const QString tools::list

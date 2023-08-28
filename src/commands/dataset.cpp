@@ -1,13 +1,10 @@
 #include "dataset.h"
+
+#include "src/config/config.h"
+
 #include "../utils/tools.h"
 #include "../utils/errors.h"
 
-#include <iostream>
-#include <cstdint>
-#include <cstdlib> // for linux system variable
-#include <exception>
-
-#include <QCoreApplication>
 #include <QString>
 #include <QSettings>
 #include <QFile>
@@ -27,9 +24,7 @@ void dataset::createDataset
 {
     using namespace::std;
 
-    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
-
-    QJsonObject jsonDatasets = tools::getJsonObject(appConfigPath + "/config/datasets.json");
+    QJsonObject jsonDatasets = tools::getJsonObject(USER_CONFIG_PATH "/datasets.json");
     QJsonObject newDataset;
 
     if (jsonDatasets.contains(name))
@@ -37,36 +32,24 @@ void dataset::createDataset
         throw error::name::DatasetNameError();
     }
 
-
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    QString datasetPath = env.value("SA_DATASET_PATH");
+    QString datasetPath = env.value("DATASETS_PATH");
 
     if (datasetPath.isEmpty())
     {
-        error::environment::SA_DATASET_Error error;
+        error::environment::DATASETS_PATH_Error error;
 
-        /* QString username = qgetenv("USER");
-        if (username.isEmpty())
-        {
-            username = qgetenv("USERNAME");
-        }
-
-        if (username == "root")
-        {
-            qCritical() << "\033[33m[ERROR] <CRITICAL>: Running as root!\033[0m";
-            datasetPath = "./datasets";
-        }
-        else
-        {
-            datasetPath = "/home/" + username + "/.simpleCLai/datasets";
-        } */
-
-        datasetPath = appConfigPath + "/datasets";
+        datasetPath = DEFAULT_DATASETS_PATH;
 
         qInfo() << error.what() << "\033[36m"
                 << "Default:" << datasetPath
                 << "\033[0m";
+
+        // set the $SA_PROFILE_PATH for debian
+        qDebug() << "\033[90m[DEBUG]: Script executed with output:"
+                 << tools::installProcess(APP_SCRIPTS_PATH "/set_debian_env.sh DATASETS_PATH " + datasetPath)
+                 << "\033[0m";
     }
 
     datasetPath = datasetPath + "/" + name;
@@ -76,7 +59,7 @@ void dataset::createDataset
     const QString newImagesPath = datasetPath + "/images";
     const QString newLabelsPath = datasetPath + "/labels";
 
-    QSettings settings("/etc/" + QCoreApplication::applicationName() + "/config/config.ini", QSettings::IniFormat);
+    QSettings settings(APP_CONFIG_PATH "/config.ini", QSettings::IniFormat);
 
     QStringList label_formats = settings.value("dataset/supported_labeling_formats").toStringList();
 
@@ -102,14 +85,14 @@ void dataset::createDataset
 
     jsonDatasets[name] = newDataset;
 
-    tools::writeJson(appConfigPath + "/config/datasets.json", jsonDatasets);
+    tools::writeJson(USER_CONFIG_PATH "/datasets.json", jsonDatasets);
 
     qInfo() << "\033[32m[INFO]: Successfully created dataset!\033[0m";
 }
 
 void dataset::list()
 {
-    const QJsonObject& jsonDatasets = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject(USER_CONFIG_PATH "/datasets.json");
 
     qInfo().noquote() << tools::list(jsonDatasets).toUtf8();
 }

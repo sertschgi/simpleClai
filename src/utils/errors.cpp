@@ -5,11 +5,11 @@
 #include <QCoreApplication>
 
 
-const char* error::environment::SA_DATASET_Error::what() const noexcept
+const char* error::environment::DATASETS_PATH_Error::what() const noexcept
 {
     return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
 }
-const char* error::environment::SA_PROFILE_Error::what() const noexcept
+const char* error::environment::PROFILES_PATH_Error::what() const noexcept
 {
     return "\033[36m[ALERT]: Could not find SA_DATASET_PATH. Is it deleted? Please set it to a Path where your DATASET will be stored.\033[0m";
 }

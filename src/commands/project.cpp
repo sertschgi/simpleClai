@@ -1,13 +1,9 @@
 #include "project.h"
+
+#include "../config/config.h"
 #include "../utils/tools.h"
 #include "../utils/errors.h"
 
-#include <iostream>
-#include <cstdint>
-#include <cstdlib> // for linux system variable
-#include <exception>
-
-#include <QCoreApplication>
 #include <QDir>
 #include <QString>
 #include <QFile>
@@ -28,9 +24,7 @@ void project::createProject
 {
     using namespace::std;
 
-    QString appConfigPath = QDir::homePath() + "/." + QCoreApplication::applicationName();
-
-    QJsonObject jsonProfiles = tools::getJsonObject(appConfigPath + "/config/profiles.json");
+    QJsonObject jsonProfiles = tools::getJsonObject(USER_CONFIG_PATH "/profiles.json");
 
     if (!jsonProfiles.contains(profile))
     {
@@ -40,22 +34,21 @@ void project::createProject
     QJsonObject jsonProfile = jsonProfiles[profile].toObject();
 
 
-    QJsonObject jsonProjects = tools::getJsonObject(appConfigPath + "/config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
 
     if (jsonProjects.contains(name))
     {
         throw error::name::ProjectNameError();
     }
 
-    const QJsonObject& jsonDatasets = tools::getJsonObject(appConfigPath + "/config/datasets.json");
+    const QJsonObject& jsonDatasets = tools::getJsonObject(USER_CONFIG_PATH "/datasets.json");
 
     if (!jsonDatasets.contains(dataset))
     {
         throw error::existence::NoSuchDatasetError();
     }
 
-    const QString& profilePath = jsonProfile["profile_path"].toString();
-    const QString& projectPath = profilePath + "/projects/" + name;
+    const QString& projectPath = DEFAULT_PROJECTS_PATH "/" + name;
 
     QJsonObject newProject;
 
@@ -66,12 +59,12 @@ void project::createProject
     const QString& framework = jsonProfile["framework"].toString();
     const QString& scope = jsonProfile["scope"].toString();
 
-    const QJsonObject& jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
+    const QJsonObject& jsonFrameworks = tools::getJsonObject(APP_CONFIG_PATH "/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
     QMap<QString, QString> replacements;
-    replacements.insert("$NAME", name);
-    replacements.insert("$PROFILE_PATH", profilePath);
+    replacements.insert("%{NAME}", name);
+    replacements.insert("%{PROJECT_PATH}", projectPath);
 
     const QString& script = tools::interpretPath(jsonProject["install_script"].toString(), replacements);
 
@@ -79,12 +72,12 @@ void project::createProject
 
     jsonProjects[name] = newProject;
 
-    tools::writeJson(appConfigPath + "/config/projects.json", jsonProjects);
+    tools::writeJson(USER_CONFIG_PATH "/projects.json", jsonProjects);
 }
 
 void project::list()
 {
-    QJsonObject jsonProjects = tools::getJsonObject(QDir::homePath() + "/." + QCoreApplication::applicationName() + "/config/projects.json");
+    QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
 
     qInfo().noquote() << tools::list(jsonProjects).toUtf8();
 }

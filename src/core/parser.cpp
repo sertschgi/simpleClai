@@ -230,28 +230,42 @@ void clparser::parseArgs
         QCommandLineOption listDatasetsOption({"d", "datasets"}, "List the datasets.");
         QCommandLineOption listProfilesOption({"r", "profiles"}, "List the profiles.");
         QCommandLineOption listProjectsOption({"p", "projects"}, "List the projects.");
+        QCommandLineOption listModelsOption({"m", "models"}, "List the models of a framework and scope.");
         QCommandLineOption listFrameworksOption({"f", "frameworks"}, "List the frameworks.");
 
         QList<QCommandLineOption> optionsList;
-        optionsList << listDatasetsOption << listProfilesOption << listProjectsOption << listFrameworksOption;
+        optionsList << listDatasetsOption << listProfilesOption << listProjectsOption << listModelsOption << listFrameworksOption;
 
         parser.addOptions(optionsList);
 
         parser.process(app.arguments());
 
+        const QStringList& posArgs = parser.positionalArguments();
+
         if (parser.isSet(listDatasetsOption))
         {
             dataset::list();
         }
-        else if (parser.isSet(listProfilesOption))
+
+        if (parser.isSet(listProfilesOption))
         {
             profile::list();
         }
-        else if (parser.isSet(listFrameworksOption))
+
+        if (parser.isSet(listFrameworksOption))
         {
             frameworks::list();
         }
-        else
+
+        if (parser.isSet(listModelsOption) && posArgs.size() > 2)
+        {
+            model::list(posArgs[1], posArgs[2]);
+        }
+
+        if (! parser.isSet(listDatasetsOption) ||
+            ! parser.isSet(listProfilesOption) ||
+            ! parser.isSet(listFrameworksOption) ||
+            ! parser.isSet(listModelsOption))
         {
             project::list();
         }

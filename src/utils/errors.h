@@ -20,12 +20,12 @@ namespace environment
         virtual const char* what() const noexcept = 0;
     };
 
-    class SA_DATASET_Error: public EnvrionmentError
+    class DATASETS_PATH_Error: public EnvrionmentError
     {
     public:
         const char* what() const noexcept override;
     };
-    class SA_PROFILE_Error : public EnvrionmentError
+    class PROFILES_PATH_Error : public EnvrionmentError
     {
     public:
         const char* what() const noexcept override;

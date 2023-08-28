@@ -1,4 +1,6 @@
 #include "frameworks.h"
+
+#include "../config/config.h"
 #include "../utils/tools.h"
 
 #include <QCoreApplication>
@@ -7,7 +9,7 @@
 
 void frameworks::list()
 {
-    QJsonObject jsonFrameworks = tools::getJsonObject("/etc/" + QCoreApplication::applicationName() + "/config/frameworks.json");
+    QJsonObject jsonFrameworks = tools::getJsonObject(APP_CONFIG_PATH "/frameworks.json");
 
     qInfo().noquote() << tools::list(jsonFrameworks).toUtf8();
 }

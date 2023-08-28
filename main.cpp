@@ -1,15 +1,15 @@
 #include <QCoreApplication>
 #include <QDebug>
-#include <iostream>
 
-#include "./src/core/parser.h"
+#include "src/config/config.h" // edit all default paths and vars in config.h
+#include "src/core/parser.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QCoreApplication::setApplicationName("sclai");
-    QCoreApplication::setApplicationVersion("0.0.1");
+    QCoreApplication::setApplicationName(APP_NAME);
+    QCoreApplication::setApplicationVersion(APP_VERSION);
 
     clparser::parseArgs(a);
 

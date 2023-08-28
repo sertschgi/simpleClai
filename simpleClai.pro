@@ -23,7 +23,8 @@ HEADERS += \
         src/commands/frameworks.h \
         src/core/parser.h \
         src/utils/tools.h \
-        src/utils/errors.h
+        src/utils/errors.h \
+        src/config/config.h
 
 # Following two blocks are for 'make install'.
 # Those will not be needed for (deb) packages as only 'make' is used.
@@ -38,9 +39,9 @@ CONFIG(release, debug|release): INSTALLS += target script_install
 script_install.path = /etc/$${TARGET}/scripts
 script_install.files += scripts/*
 
-
-LIBS += -lpython3.10
-INCLUDEPATH += /usr/include/python3.10
+# adjust your python libs!!
+LIBS += -lpython3.11
+INCLUDEPATH += /usr/include/python3.11
 
 target.path = /usr/bin
 qnx: target.path = /tmp/$${TARGET}/bin

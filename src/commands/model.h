@@ -22,6 +22,12 @@ void trainModel
     const QString& name,
     const QString& project
     );
+
+void list
+    (
+    const QString& framework,
+    const QString& scope
+    );
 }
 
 #endif // MODEL_H

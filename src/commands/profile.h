@@ -17,6 +17,12 @@ void createProfile
     const QString& scope
     );
 
+void deleteProfile
+    (
+    const QString& name,
+    bool confirmationDialog = true
+    );
+
 void list();
 }
 

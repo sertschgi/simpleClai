@@ -102,6 +102,22 @@ void profile::createProfile
     tools::writeJson(USER_CONFIG_PATH "profiles.json", jsonProfiles);
 }
 
+void profile::deleteProfile
+    (
+    const QString& name,
+    bool confirmationDialog
+    )
+{
+    QJsonObject jsonProfiles = tools::getJsonObject(USER_CONFIG_PATH "/profiles.json");
+
+    if (!jsonProfiles.contains(name))
+    {
+        throw error::existence::NoSuchProfileError();
+    }
+
+    tools::deleteFromObject(name, jsonProfiles, confirmationDialog);
+}
+
 void profile::list()
 {
     const QJsonObject& jsonProfiles = tools::getJsonObject(USER_CONFIG_PATH "/profiles.json");

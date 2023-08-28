@@ -1,6 +1,7 @@
 #include "tools.h"
 
 #include "../config/config.h"
+#include "../utils/errors.h"
 
 #include <string>
 #include <iostream>
@@ -16,6 +17,15 @@
 #include <QMap>
 #include <QStandardPaths>
 #include <QResource>
+#include <QTextStream>
+
+QString tools::getFullPath
+    (
+    QString path
+    )
+{
+    return QFileInfo(path.replace("~", QDir::homePath())).absoluteFilePath();
+}
 
 
 QJsonObject tools::getJsonObject
@@ -23,10 +33,12 @@ QJsonObject tools::getJsonObject
     const QString& filename
     )
 {
-    QFile jsonFile(filename);
+    const QString& fullPath = tools::getFullPath(filename);
+
+    QFile jsonFile(fullPath);
 
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCritical() << "\033[36m[ALERT]: Could not find resource file:" << filename << "Creating a new one.\033[0m";
+        qCritical() << "\033[36m[ALERT]: Could not find resource file:" << fullPath << "Creating a new one.\033[0m";
 
         return QJsonObject();
     }
@@ -52,14 +64,16 @@ void tools::writeJson
     QJsonObject jsonObject
     )
 {
-    QSaveFile jsonFile(filename);
+    const QString& fullPath = getFullPath(filename);
+
+    QSaveFile jsonFile(fullPath);
 
     QDir().mkpath(QFileInfo(filename).absolutePath());
 
     // qDebug() << "\033[90m[DEBUG]: Json file properties:" << jsonFile.fileName() << "\033[0m";
 
     if (!jsonFile.open(QIODevice::WriteOnly)) {
-        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!:\033[35m" << filename << "\033[0m";
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!:\033[35m" << fullPath << "\033[0m";
     }
 
     QJsonDocument jsonDoc(jsonObject);
@@ -70,7 +84,7 @@ void tools::writeJson
         qFatal() << "\033[31m[ERROR] <FATAL>: Could not save the file! Try again!?\033[0m";
     }
 
-    qInfo() << "\033[32m[INFO]: Successfully saved file!\033[35m" << filename << "\033[0m";
+    qInfo() << "\033[32m[INFO]: Successfully saved file!\033[35m" << fullPath << "\033[0m";
 }
 
 void tools::updateProgressBar
@@ -104,13 +118,15 @@ void tools::createPath
     const QString& path
     )
 {
-    QDir destination(path);
+    QString fullPath = tools::getFullPath(path);
+
+    QDir destination(fullPath);
 
     if (!destination.exists())
     {
-        qCritical() << "\033[36m[ALERT]: Could not find the" << path << "directory. Creating a new one.\033[0m";
+        qCritical() << "\033[36m[ALERT]: Could not find the" << fullPath << "directory. Creating a new one.\033[0m";
 
-        if (destination.mkpath(path))
+        if (destination.mkpath(fullPath))
         {
             qInfo() << "\033[32m[INFO]: Successfully created directory!\033[0m";
         } else
@@ -120,6 +136,49 @@ void tools::createPath
     }
 }
 
+void tools::deleteFromObject
+    (
+    const QString& name,
+    QJsonObject object,
+    bool confirmationDialog
+    )
+{
+    if (object.contains(name))
+    {
+        throw error::name::DatasetNameError();
+    }
+
+    QJsonObject thisDataset = object[name].toObject();
+
+    const QString& datasetPath = tools::getFullPath(thisDataset["path"].toString());
+
+    QTextStream inputStream(stdin);
+
+    if (confirmationDialog)
+    {
+        qWarning() << "\033[36m[ALERT]: Do you really want to delete" << name << "?\n If so press the y key.\n\033[0m";
+
+        QString userInput = inputStream.readLine();
+
+        if (!(userInput.toLower() == "y"))
+        {
+            return;
+        }
+    }
+
+    object.remove(name);
+    tools::writeJson(USER_CONFIG_PATH "/datasets.json", object);
+
+    if (!QDir(datasetPath).rmpath(datasetPath))
+    {
+        qFatal() << "\033[31m[ERROR] <FATAL>: Failed to remove directory!" << datasetPath << "\033[0m";
+    }
+
+    tools::updateProgressBar(1,1);
+
+    qInfo() << "\033[32m[INFO]: Successfully deleated dataset!\033[0m";
+}
+
 int tools::copyFilesWithExtention
     (
     const QString& sourceDir,
@@ -127,9 +186,12 @@ int tools::copyFilesWithExtention
     const QStringList& extensions
     )
 {
-    tools::createPath(destDir);
+    QString fullSourceDir = tools::getFullPath(sourceDir);
+    QString fullDestDir = tools::getFullPath(destDir);
 
-    QDir directory(sourceDir);
+    tools::createPath(fullDestDir);
+
+    QDir directory(fullSourceDir);
 
     QStringList filters;
 
@@ -145,7 +207,7 @@ int tools::copyFilesWithExtention
     qInfo() << "\033[32m[INFO]:"
             << files.size() << "files will be copied from\033[35m"
             << directory.absolutePath() << "\033[32mto\033[35m"
-            << destDir;
+            << fullDestDir;
     qInfo() << "\033[90m[DEBUG]: Files:" << files.join(", ") << "\033[0m";
 
 
@@ -155,7 +217,7 @@ int tools::copyFilesWithExtention
     for (int i = 0; i < files.length(); i++)
     {
         QString sourcePath = directory.filePath(files[i]);
-        QString destPath = QDir(destDir).filePath(files[i]);
+        QString destPath = QDir(fullDestDir).filePath(files[i]);
 
         if (QFile::copy(sourcePath, destPath))
         {
@@ -200,7 +262,7 @@ QString tools::installProcess
 
     installationProcess.setEnvironment(envVars);
 
-    const QString& workDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)+"/."+QCoreApplication::applicationName()+"/tmp";
+    const QString& workDir = QDir::homePath()+"/."+QCoreApplication::applicationName()+"/tmp";
     tools::createPath(workDir);
 
     installationProcess.setWorkingDirectory(workDir);
@@ -252,12 +314,14 @@ QString tools::interpretPath
     QMap<QString, QString> replacements
     )
 {
+    QString fullPath = tools::getFullPath(path);
+
     replacements.insert("%{APP_SCRIPTS_PATH}", APP_SCRIPTS_PATH);
     // replacements.insert("%{APP_CONFIG_PATH}", APP_CONFIG_PATH);
     // replacements.insert("%{USER_CONFIG_PATH}", USER_CONFIG_PATH);
     replacements.insert("%{USER_SCRIPTS_PATH}", USER_SCRIPTS_PATH);
 
-    QString result = path;
+    QString result = fullPath;
 
     for (auto it = replacements.constBegin(); it != replacements.constEnd(); ++it)
     {

@@ -75,6 +75,22 @@ void project::createProject
     tools::writeJson(USER_CONFIG_PATH "/projects.json", jsonProjects);
 }
 
+void deleteProject
+    (
+    const QString& name,
+    bool confirmationDialog
+    )
+{
+    QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
+
+    if (!jsonProjects.contains(name))
+    {
+        throw error::existence::NoSuchProjectError();
+    }
+
+    tools::deleteFromObject(name, jsonProjects, confirmationDialog);
+}
+
 void project::list()
 {
     QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");

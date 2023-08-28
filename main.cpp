@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(APP_NAME);
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    clparser::parseArgs(a);
+    clparser::parseArgs();
 
     qInfo() << "\033[32m[INFO]: Finished!\033[0m";
 

@@ -79,6 +79,7 @@ void dataset::createDataset
 
     QFile::copy(labelmapPath, newLabelmapPath);
 
+    newDataset["path"] = datasetPath;
     newDataset["images"] = newImagesPath;
     newDataset["labels"] = newLabelsPath;
     newDataset["labelmap"] = newLabelmapPath;
@@ -88,6 +89,22 @@ void dataset::createDataset
     tools::writeJson(USER_CONFIG_PATH "/datasets.json", jsonDatasets);
 
     qInfo() << "\033[32m[INFO]: Successfully created dataset!\033[0m";
+}
+
+void dataset::deleteDataset
+    (
+    const QString& name,
+    bool confirmationDialog
+    )
+{
+    QJsonObject jsonDatasets = tools::getJsonObject(USER_CONFIG_PATH "/datasets.json");
+
+    if (!jsonDatasets.contains(name))
+    {
+        throw error::existence::NoSuchDatasetError();
+    }
+
+    tools::deleteFromObject(name, jsonDatasets, confirmationDialog);
 }
 
 void dataset::list()

@@ -40,8 +40,8 @@ script_install.path = /etc/$${TARGET}/scripts
 script_install.files += scripts/*
 
 # adjust your python libs!!
-LIBS += -lpython3.11
-INCLUDEPATH += /usr/include/python3.11
+#LIBS += -lpython3.11
+#INCLUDEPATH += /usr/include/python3.11
 
 target.path = /usr/bin
 qnx: target.path = /tmp/$${TARGET}/bin

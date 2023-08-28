@@ -1,4 +1,4 @@
-#include <Python.h>
+// #include <Python.h>
 
 #include "model.h"
 
@@ -34,7 +34,7 @@ void model::createModel
 
     QJsonObject jsonUserModels = jsonProject["models"].toObject();
 
-    if (jsonUserModels.contains(model))
+    if (jsonUserModels.contains(name))
     {
         throw error::name::ModelNameError();
     }
@@ -69,8 +69,8 @@ void model::createModel
 
     QJsonObject newModel;
 
+    newModel["path"] = modelPath;
     newModel["model"] = model;
-    newModel["model_path"] = modelPath;
 
     jsonProjects[project].toObject()["models"].toObject()[name].toObject() = newModel;
     tools::writeJson(USER_CONFIG_PATH "projects.json", jsonProjects);
@@ -97,7 +97,12 @@ void model::trainModel
     {
         throw error::existence::NoSuchModelError();
     }
+
+    const QJsonObject& jsonModels = jsonProjects["models"].toObject();
+    const QJsonObject& jsonModel = jsonModels[name].toObject();
+
     const QString& profile = jsonProject["profile"].toString();
+
     QJsonObject jsonProfiles = tools::getJsonObject(USER_CONFIG_PATH "/profiles.json");
     const QJsonObject& jsonProfile = jsonProfiles[profile].toObject();
 
@@ -129,9 +134,39 @@ void model::trainModel
     Py_Finalize();
     */
 
+    QMap<QString, QString> replacements;
+    replacements.insert("%{NAME}", name);
+    replacements.insert("%{MODEL_PATH}", jsonModel["path"].toString());
+
     const QString& script = tools::interpretPath(jsonScope["training_script"].toString());
 
     qDebug() << "\033[32m[INFO]: Training finished with output: " << tools::installProcess(script) << "\033[0m";
+}
+
+void model::deleteModel
+    (
+    const QString& name,
+    const QString& project,
+    bool confirmationDialog
+    )
+{
+    QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
+
+    if (!jsonProjects.contains(project))
+    {
+        throw error::existence::NoSuchProjectError();
+    }
+
+    QJsonObject jsonProject = jsonProjects[project].toObject();
+
+    if (!jsonProjects["models"].toObject().contains(name))
+    {
+        throw error::existence::NoSuchModelError();
+    }
+
+    const QJsonObject& jsonModels = jsonProjects["models"].toObject();
+
+    tools::deleteFromObject(name, jsonModels, confirmationDialog);
 }
 
 void model::list

@@ -18,6 +18,11 @@ public:
     const char* what() const noexcept override;
 };
 
+QString getFullPath
+    (
+    QString path
+    );
+
 QJsonObject getJsonObject
     (
     const QString& filename
@@ -27,6 +32,13 @@ void writeJson
     (
     const QString& filename,
     QJsonObject jsonObject
+    );
+
+void deleteFromObject
+    (
+    const QString& name,
+    QJsonObject object,
+    bool confirmationDialog = true
     );
 
 int copyFilesWithExtention

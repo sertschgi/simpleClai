@@ -12,6 +12,11 @@ void createDataset
     const QString& imagesPath,
     const QString& labelsPath
     );
+void deleteDataset
+    (
+    const QString& name,
+    bool confirmationDialog = true
+    );
 void list
     (
     );

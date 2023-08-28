@@ -23,6 +23,13 @@ void trainModel
     const QString& project
     );
 
+void deleteModel
+    (
+    const QString& name,
+    const QString& project,
+    bool confirmationDialog = true
+    );
+
 void list
     (
     const QString& framework,

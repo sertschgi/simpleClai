@@ -17,6 +17,12 @@ void createProject
     const QString& dataset
     );
 
+void deleteProject
+    (
+    const QString& name,
+    bool confirmationDialog = true
+    );
+
 void init_tf_object_detection
     (
     const QJsonObject& newProject

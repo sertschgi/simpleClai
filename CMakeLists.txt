@@ -1,25 +1,56 @@
- 
-cmake_minimum_required(VERSION 3.14)
+# Set the project name
+project(sclai)
 
-project(cmaketestqtc LANGUAGES CXX)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
+# Set the C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+# Find the Qt5 package
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-add_executable(cmaketestqtc
-  main.cpp
+# Add the executable
+add_executable(${PROJECT_NAME}
+    main.cpp
+    src/commands/dataset.cpp
+    src/commands/model.cpp
+    src/commands/profile.cpp
+    src/commands/project.cpp
+    src/commands/frameworks.cpp
+    src/core/parser.cpp
+    src/utils/tools.cpp
+    src/utils/errors.cpp
 )
-target_link_libraries(cmaketestqtc Qt${QT_VERSION_MAJOR}::Core)
 
-install(TARGETS cmaketestqtc
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+# Include directories for headers
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+    src/commands
+    src/core
+    src/utils
+    src/config
 )
- 
+
+# Link the Qt5 Core library
+target_link_libraries(${PROJECT_NAME} ${QT_VERSION_MAJOR}::Core)
+
+# Add the myparser library submodule
+add_subdirectory(external/ClParser)
+
+# Link the myparser library to your project
+target_link_libraries(${PROJECT_NAME} ClParser)
+
+# Install targets and files
+install(TARGETS ${PROJECT_NAME}
+    DESTINATION /usr/bin
+)
+
+# Install config files
+install(FILES
+    config/config.h
+    DESTINATION /etc/${PROJECT_NAME}/scripts/config
+)
+
+# Install script files
+install(FILES
+    scripts/*
+    DESTINATION /etc/${PROJECT_NAME}/scripts/scripts
+)

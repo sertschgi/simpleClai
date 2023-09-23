@@ -1,11 +1,14 @@
+cmake_minimum_required(VERSION 3.24)
+
 # Set the project name
 project(sclai)
+
 
 # Set the C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)
 
 # Find the Qt5 package
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 
 # Add the executable
 add_executable(${PROJECT_NAME}
@@ -22,21 +25,20 @@ add_executable(${PROJECT_NAME}
 
 # Include directories for headers
 target_include_directories(${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
     src/commands
     src/core
     src/utils
     src/config
 )
 
-# Link the Qt5 Core library
-target_link_libraries(${PROJECT_NAME} ${QT_VERSION_MAJOR}::Core)
-
 # Add the myparser library submodule
 add_subdirectory(external/ClParser)
 
-# Link the myparser library to your project
-target_link_libraries(${PROJECT_NAME} ClParser)
+# Link the Qt5 Core library
+target_link_libraries(${PROJECT_NAME} clparser Qt${QT_VERSION_MAJOR}::Core)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/ClParser)
 
 # Install targets and files
 install(TARGETS ${PROJECT_NAME}

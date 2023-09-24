@@ -75,7 +75,7 @@ void project::createProject
     tools::writeJson(USER_CONFIG_PATH "/projects.json", jsonProjects);
 }
 
-void deleteProject
+void project::deleteProject
     (
     const QString& name,
     bool confirmationDialog

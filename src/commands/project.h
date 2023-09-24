@@ -23,12 +23,10 @@ void deleteProject
     bool confirmationDialog = true
     );
 
-void init_tf_object_detection
+void list
     (
-    const QJsonObject& newProject
     );
 
-void list();
 }
 
 #endif // PROJECT_H

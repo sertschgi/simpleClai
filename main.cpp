@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     clparser::parseArgs();
 
-    qInfo() << "\033[32m[INFO]: Finished!\033[0m";
+    // qInfo() << "\033[32m[INFO]: Finished!\033[0m";
 
     return 0;
 }

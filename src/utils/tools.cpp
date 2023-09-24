@@ -152,6 +152,8 @@ void tools::deleteFromObject
 
     const QString& datasetPath = tools::getFullPath(thisDataset["path"].toString());
 
+    qInfo() << "\033[32m[INFO]: Dataset path:" << datasetPath << "\033[0m";
+
     QTextStream inputStream(stdin);
 
     if (confirmationDialog)

@@ -12,6 +12,11 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 
+
+
+
+
+
 void checkRequiredOptions
     (
     QCommandLineParser& parser,
@@ -27,6 +32,7 @@ void checkRequiredOptions
         }
     }
 }
+
 
 void createDatasetCommand
     (
@@ -70,8 +76,8 @@ void createDatasetCommand
 
 void createProfileCommand
     (
-        QCommandLineParser& parser
-        )
+    QCommandLineParser& parser
+    )
 {
     parser.clearPositionalArguments();
     parser.addPositionalArgument("profile", "Create a profile.", "create profile ...");
@@ -108,8 +114,8 @@ void createProfileCommand
 
 void createProjectCommand
     (
-        QCommandLineParser& parser
-        )
+    QCommandLineParser& parser
+    )
 {
     parser.clearPositionalArguments();
     parser.addPositionalArgument("project", "Create a project.", "create project ...");
@@ -146,8 +152,8 @@ void createProjectCommand
 
 void createModelCommand
     (
-        QCommandLineParser& parser
-        )
+    QCommandLineParser& parser
+    )
 {
     parser.clearPositionalArguments();
     parser.addPositionalArgument("model", "Create a model.", "create model ...");
@@ -185,11 +191,10 @@ void createModelCommand
 
 void createCommand
     (
-        QCommandLineParser& parser
-        )
+    QCommandLineParser& parser
+    )
 {
     parser.clearPositionalArguments();
-    parser.addPositionalArgument("create", "Create a project, profile, dataset or model.", "create ...");
 
     parser.parse(QCoreApplication::arguments());
 
@@ -265,12 +270,11 @@ void listCommand
     )
 {
     parser.clearPositionalArguments();
-    parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list [...]");
 
     QCommandLineOption listDatasetsOption({"d", "datasets"}, "List the datasets.");
     QCommandLineOption listProfilesOption({"r", "profiles"}, "List the profiles.");
     QCommandLineOption listProjectsOption({"p", "projects"}, "List the projects.");
-    QCommandLineOption listModelsOption({"m", "models"}, "List the models.", "framework, scope");
+    QCommandLineOption listModelsOption({"s", "model-scope"}, "List the models of a scope (-f required).", "scope");
     QCommandLineOption listFrameworksOption({"f", "frameworks"}, "List the frameworks.");
 
     QList<QCommandLineOption> optionsList;
@@ -278,15 +282,13 @@ void listCommand
 
     parser.addOptions(optionsList);
 
-    parser.process(QCoreApplication::arguments());
+    parser.parse(QCoreApplication::arguments());
 
     if (parser.optionNames().size() == 0)
     {
         qInfo() << "\033[33m[ERROR] <CRITICAL>: No option specified.\033[0m";
         parser.showHelp(1);
     }
-
-    QStringList args = parser.positionalArguments();
 
     if (parser.isSet(listDatasetsOption))
     {
@@ -303,20 +305,39 @@ void listCommand
         project::list();
     }
 
-    if (parser.isSet(listModelsOption))
-    {
-        if (!(args.size() > 3))
-        {
-            qCritical() << "\033[31mnot enough options!\nPositional argument\n   - 1: framework\n   - 2: scope\033[0m\n";
-            parser.showHelp(1);
-        }
-        model::list(args[1], args[2]);
-    }
-
     if (parser.isSet(listFrameworksOption))
     {
-        frameworks::list();
+        if (parser.isSet(listModelsOption))
+        {
+            if (parser.value(listFrameworksOption) == "")
+            {
+                qCritical() << "\033[33m[ERROR] <CRITICAL>: value required after -f, --frameworks \033[0m";
+                parser.showHelp(1);
+            }
+            else if (parser.value(listModelsOption) == "")
+            {
+                qCritical() << "\033[33m[ERROR] <CRITICAL>: value required after -s, --scope  \033[0m";
+                parser.showHelp(1);
+            }
+            else
+            {
+                model::list
+                (
+                parser.value(listFrameworksOption),
+                parser.value(listModelsOption)
+                );
+            }
+        }
+        else
+        {
+            frameworks::list();
+        }
     }
+    else if (parser.isSet(listModelsOption))
+    {
+        qCritical() << "\033[33m[ERROR] <CRITICAL>: --frameworks option required\033[0m";
+    }
+
 }
 
 void deleteCommand
@@ -325,12 +346,11 @@ void deleteCommand
     )
 {
     parser.clearPositionalArguments();
-    parser.addPositionalArgument("delete", "Delete your projects, profiles, profiles or models", "delete [...]");
 
     QCommandLineOption deleteDatasetOption({"d", "dataset"}, "Delete a dataset.", "dataset");
     QCommandLineOption deleteProfilesOption({"r", "profile"}, "Delete a profile.", "profile");
     QCommandLineOption deleteProjectsOption({"p", "project"}, "Delete a project.", "project");
-    QCommandLineOption deleteModelsOption({"m", "model"}, "Delete a model.", "model");
+    QCommandLineOption deleteModelsOption({"m", "model"}, "Delete a model.", "name");
     QCommandLineOption confirmationOption({"y", "yes"}, "Continue without asking.");
 
     QList<QCommandLineOption> optionsList;
@@ -346,15 +366,11 @@ void deleteCommand
         parser.showHelp(1);
     }
 
-    QStringList args = parser.positionalArguments();
-
-    if (args[1].isEmpty())
-    {
-        qCritical() << "\033[31mnot enough arguments!\nPositional argument\n   - 1: name\033[0m\n";
-        parser.showHelp(1);
-    }
-
-    const QString& name = args[1];
+    // if (args[1].isEmpty())
+    // {
+    //     qCritical() << "\033[31mnot enough arguments!\nPositional argument\n   - 1: name\033[0m\n";
+    //     parser.showHelp(1);
+    // }
 
     bool confirmation = false;
 
@@ -363,30 +379,56 @@ void deleteCommand
         confirmation = true;
     }
 
-    if (parser.isSet(deleteDatasetOption))
+    try
     {
-        dataset::deleteDataset(name, confirmation);
-    }
-
-    if (parser.isSet(deleteProfilesOption))
-    {
-        profile::deleteProfile(name, confirmation);
-    }
-
-    //if (parser.isSet(deleteProjectsOption))
-    //{
-    //    project::deleteProject(name, confirmation);
-    //}
-
-    if (parser.isSet(deleteModelsOption))
-    {
-
-        if (!(args.size() > 3))
+        if (parser.isSet(deleteDatasetOption))
         {
-            qCritical() << "\033[31mnot enough options!\nPositional argument\n   - 1: name\n   - 2: project\033[0m\n";
-            parser.showHelp(1);
+            dataset::deleteDataset
+                (
+                parser.value(deleteDatasetOption),
+                confirmation
+                );
         }
-        model::deleteModel(name, args[2] ,confirmation);
+
+        if (parser.isSet(deleteProfilesOption))
+        {
+            profile::deleteProfile
+                (
+                parser.value(deleteProfilesOption),
+                confirmation
+                );
+        }
+
+
+        if (parser.isSet(deleteProjectsOption))
+        {
+            if (parser.isSet(deleteModelsOption))
+            {
+                model::deleteModel
+                    (
+                    parser.value(deleteProjectsOption),
+                    parser.value(deleteModelsOption),
+                    confirmation
+                    );
+            }
+            else
+            {
+                project::deleteProject
+                    (
+                    parser.value(deleteProjectsOption),
+                    confirmation
+                    );
+            }
+        }
+        else if (parser.isSet(deleteModelsOption))
+        {
+            qCritical() << "\033[33m[ERROR] <CRITICAL>: --profile option required\033[0m";
+        }
+
+    }
+    catch (const error::GeneralError& Error)
+    {
+        qFatal() << Error.what();
     }
 
 }
@@ -401,12 +443,18 @@ void clparser::parseArgs
 
     parser.addVersionOption();
 
-    parser.addPositionalArgument("command", "The command to execute.");
+
+    parser.addPositionalArgument("create", "Create a project, profile, dataset or model.", "create ...");
+    parser.addPositionalArgument("delete", "Delete your projects, profiles, profiles or models", "delete [...]");
+
+    parser.addPositionalArgument("list", "List your projects, profiles or datasets.", "list");
+
 
     parser.parse(QCoreApplication::arguments());
 
     QStringList args = parser.positionalArguments();
     QString command = args.isEmpty() ? QString() : args.first();
+
 
     if (command == "create")
     {

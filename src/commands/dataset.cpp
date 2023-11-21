@@ -1,6 +1,6 @@
 #include "dataset.h"
 
-#include "src/config/config.h"
+#include "../config/config.h"
 
 #include "../utils/tools.h"
 #include "../utils/errors.h"

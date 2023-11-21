@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.24)
 # Set the project name
 project(sclai)
 
-
 # Set the C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)
 
@@ -36,23 +35,21 @@ target_include_directories(${PROJECT_NAME}
 add_subdirectory(external/ClParser)
 
 # Link the Qt5 Core library
-target_link_libraries(${PROJECT_NAME} clparser Qt${QT_VERSION_MAJOR}::Core)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/ClParser)
+target_link_libraries(${PROJECT_NAME} ClParser Qt${QT_VERSION_MAJOR}::Core)
 
 # Install targets and files
-install(TARGETS ${PROJECT_NAME}
-    DESTINATION /usr/bin
-)
+# install(TARGETS ${PROJECT_NAME}
+#     DESTINATION /usr/bin
+# )
 
 # Install config files
-install(FILES
-    config/config.h
-    DESTINATION /etc/${PROJECT_NAME}/scripts/config
-)
+# install(FILES
+#     config/config.h
+#     DESTINATION /etc/${PROJECT_NAME}/scripts/config
+# )
 
 # Install script files
-install(FILES
-    scripts/*
-    DESTINATION /etc/${PROJECT_NAME}/scripts/scripts
-)
+# install(FILES
+#     scripts/*
+#     DESTINATION /etc/${PROJECT_NAME}/scripts/scripts
+# )

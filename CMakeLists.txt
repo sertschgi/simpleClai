@@ -37,19 +37,4 @@ add_subdirectory(external/ClParser)
 # Link the Qt5 Core library
 target_link_libraries(${PROJECT_NAME} ClParser Qt${QT_VERSION_MAJOR}::Core)
 
-# Install targets and files
-# install(TARGETS ${PROJECT_NAME}
-#     DESTINATION /usr/bin
-# )
 
-# Install config files
-# install(FILES
-#     config/config.h
-#     DESTINATION /etc/${PROJECT_NAME}/scripts/config
-# )
-
-# Install script files
-# install(FILES
-#     scripts/*
-#     DESTINATION /etc/${PROJECT_NAME}/scripts/scripts
-# )

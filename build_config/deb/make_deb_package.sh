@@ -2,10 +2,10 @@
 
 # Make sure to qmake and make it first.
 
-buildDir=$1
-sourceDir=$2
+buildDir=$(realpath $1)
+sourceDir=$(realpath $2)
 appName=$3
-packagePath="$4"
+packagePath=$(realpath $4)
 
 if [[ -z $1 ]]; then
     echo "No arguments given: 1:buildDir not given, 2:sourceDir not given, 3:appName not given. 4:packagePath not required. exiting..."
@@ -21,12 +21,9 @@ elif [[ -z $4 ]]; then
     packagePath="package"
 fi
 
-
-
 echo "buildDir:$buildDir, sourceDir:$sourceDir, appName:$appName"
 
-cd $buildDir
-
+builtAppPath="$buildDir/$appName"
 destAppPath="$packagePath/$appName/usr/bin"
 destScriptPath="$packagePath/$appName/etc/$appName/scripts"
 destConfigPath="$packagePath/$appName/etc/$appName/config"
@@ -48,8 +45,10 @@ if [[ ! -d $buidConfigPath ]]; then
     mkdir -p $buidConfigPath
 fi
 
-rm *o Makefile
-mv $appName $destAppPath
+# rm $buildDir/*.o $buildDir/Makefile
+
+mv $builtAppPath $destAppPath
+
 cp -f $sourceDir/scripts/* $destScriptPath
 cp -f $sourceDir/config/* $destConfigPath
 cp -r -f $sourceDir/build_config/deb/DEBIAN/* $buidConfigPath

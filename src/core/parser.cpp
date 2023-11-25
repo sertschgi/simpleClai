@@ -50,7 +50,7 @@ void clparser::parseArgs
 
     ClCommand createDatasetCommand(
         "dataset", { &datasetNameOption, &datasetLabelOption,
-         &datsetLabelPathOption, &datasetImagePathOption }
+         &datsetLabelPathOption, &datasetImagePathOption }, "creates a dataset"
         );
 
 
@@ -76,7 +76,8 @@ void clparser::parseArgs
 
     ClCommand createProfileCommand(
         "profile",
-        { &profileNameOption, &profileFrameworkOption, &profileScopeOption }
+        { &profileNameOption, &profileFrameworkOption, &profileScopeOption },
+        "creates a profile"
         );
 
 
@@ -101,7 +102,8 @@ void clparser::parseArgs
         );
     ClCommand createProjectCommand(
         "project",
-        { &projectNameOption, &projectProfileOption, &projectDatasetOption }
+        { &projectNameOption, &projectProfileOption, &projectDatasetOption },
+        "creates a project"
         );
 
 
@@ -126,7 +128,8 @@ void clparser::parseArgs
         );
 
     ClCommand createModelCommand(
-        "model", { &modelNameOption, &modelProjectOption, &modelModelOption }
+        "model", { &modelNameOption, &modelProjectOption, &modelModelOption },
+        "creates a model"
         );
 
 
@@ -137,7 +140,7 @@ void clparser::parseArgs
                                        &createProjectCommand,
                                        &createModelCommand };
 
-    ClCommand createCommand("create", createCommands);
+    ClCommand createCommand("create", createCommands, "creates your stuff");
 
 
     /*    ############################# TRAIN COMMAND #############################    */
@@ -155,7 +158,7 @@ void clparser::parseArgs
         );
 
     ClOptionPtrList trainOptions = { &trainProjectOption, &trainModelOption };
-    ClCommand trainCommand("train", trainOptions);
+    ClCommand trainCommand("train", trainOptions, "trains your model");
 
     /*    ############################# LIST COMMAND #############################    */
 
@@ -178,7 +181,7 @@ void clparser::parseArgs
         &listModelsOption,
         &listFrameworksOption
     };
-    ClCommand listCommand("list", listOptions);
+    ClCommand listCommand("list", listOptions, "lists stuff");
 
     /*    ############################# DELETE COMMAND #############################    */
 
@@ -204,12 +207,12 @@ void clparser::parseArgs
         &confirmationOption
     };
 
-    ClCommand deleteCommands("delete", deleteOptions);
+    ClCommand deleteCommand("delete", deleteOptions, "deletes stuff");
 
 
     /*    ############################# PARSER #############################    */
 
-    ClParser parser({ &createCommand });
+    ClParser parser({ &createCommand, &listCommand, &trainCommand, &deleteCommand });
     parser.addAppName("0.0.1");
     parser.addHelpOption();
 
@@ -296,7 +299,6 @@ void clparser::parseArgs
 
     if (deleteModelOption.isSet())
         dataset::deleteDataset(QString(deleteModelPosArg.cvalue()), confirmationOption.isSet());
-
 }
 
 

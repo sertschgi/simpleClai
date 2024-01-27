@@ -27,30 +27,30 @@ void clparser::parseArgs
     ClPosArg datasetNamePosArg("dataset-name", true);
     ClOption datasetNameOption(
         "dataset-name", { "n", "name" }, "Specify the name of your dataset.",
-        { &datasetNamePosArg }
+        { datasetNamePosArg }
         );
 
     ClPosArg datasetLabelPosArg("dataset-label", true);
     ClOption datasetLabelOption(
         "dataset-label", { "l", "labels" },
-        "Specify the path of your labelmap.pbtxt", { &datasetLabelPosArg }
+        "Specify the path of your labelmap.pbtxt", { datasetLabelPosArg }
         );
 
     ClPosArg datsetLabelPathPosArg("dataset-label-path", true);
     ClOption datsetLabelPathOption(
         "dataset-label-path", { "a", "labels_path" }, "Specify the label path.",
-        { &datsetLabelPathPosArg }
+        { datsetLabelPathPosArg }
         );
 
     ClPosArg datasetImagePathPosArg("dataset-image-path", true);
     ClOption datasetImagePathOption(
         "dataset-image-path", { "m", "images_path" },
-        "Specify the images path.", { &datasetImagePathPosArg }
+        "Specify the images path.", { datasetImagePathPosArg }
         );
 
     ClCommand createDatasetCommand(
-        "dataset", { &datasetNameOption, &datasetLabelOption,
-         &datsetLabelPathOption, &datasetImagePathOption }, "creates a dataset"
+        "dataset", { datasetNameOption, datasetLabelOption,
+         datsetLabelPathOption, datasetImagePathOption }, "creates a dataset"
         );
 
 
@@ -59,24 +59,24 @@ void clparser::parseArgs
     ClPosArg profileNamePosArg("profile-name", true);
     ClOption profileNameOption(
         "profile-name", { "n", "name" }, "Specify the name of your profile.",
-        { &profileNamePosArg }
+        { profileNamePosArg }
         );
 
     ClPosArg profileFrameworkPosArg("profile-framework", true);
     ClOption profileFrameworkOption(
         "profile-framework", { "f", "framework" },
-        "Specify the framework you want to use.", { &profileNamePosArg }
+        "Specify the framework you want to use.", { profileNamePosArg }
         );
 
     ClPosArg profileScopePosArg("profile-scope", true);
     ClOption profileScopeOption(
         "profile-scope", { "s", "scope" },
-        "Specify which field of machine learning you want to use.", { &profileScopePosArg }
+        "Specify which field of machine learning you want to use.", { profileScopePosArg }
         );
 
     ClCommand createProfileCommand(
         "profile",
-        { &profileNameOption, &profileFrameworkOption, &profileScopeOption },
+        { profileNameOption, profileFrameworkOption, profileScopeOption },
         "creates a profile"
         );
 
@@ -86,23 +86,23 @@ void clparser::parseArgs
     ClPosArg projectNamePosArg("project-name", true);
     ClOption projectNameOption(
         "project-name", { "n", "name" }, "Specify the name of your project.",
-        { &projectNamePosArg }
+        { projectNamePosArg }
         );
 
     ClPosArg projectProfilePosArg("project-profile", true);
     ClOption projectProfileOption(
         "project-profile", { "p", "profile" },
-        "Specify the profile you want to use for your project.", { &projectProfilePosArg }
+        "Specify the profile you want to use for your project.", { projectProfilePosArg }
         );
 
     ClPosArg projectDatasetPosArg("project-dataset", true);
     ClOption projectDatasetOption(
         "project-dataset", { "d", "dataset" },
-        "Specify the dataset you want to use.", { &projectDatasetPosArg }
+        "Specify the dataset you want to use.", { projectDatasetPosArg }
         );
     ClCommand createProjectCommand(
         "project",
-        { &projectNameOption, &projectProfileOption, &projectDatasetOption },
+        { projectNameOption, projectProfileOption, projectDatasetOption },
         "creates a project"
         );
 
@@ -112,19 +112,19 @@ void clparser::parseArgs
     ClPosArg modelNamePosArg("model-name", true);
     ClOption modelNameOption(
         "model-name", { "n", "name" }, "Specify the name of your model.",
-        { &modelNamePosArg }
+        { modelNamePosArg }
         );
 
     ClPosArg modelProjectPosArg("model-project", true);
     ClOption modelProjectOption(
         "model-project", { "p", "project" },
-        "Specify the project you want to use for your model.", { &modelProjectPosArg }
+        "Specify the project you want to use for your model.", { modelProjectPosArg }
         );
 
     ClPosArg modelModelPosArg("model-model", true);
     ClOption modelModelOption(
         "model-model", { "m", "model" }, "Specify the model you want to use.",
-        { &modelModelPosArg }
+        { modelModelPosArg }
         );
 
     ClCommand createModelCommand(
@@ -135,10 +135,10 @@ void clparser::parseArgs
 
     // CREATE COMMAND
 
-    ClCommandPtrList createCommands = { &createDatasetCommand,
-                                       &createProfileCommand,
-                                       &createProjectCommand,
-                                       &createModelCommand };
+    ClCommandPtrList createCommands = { createDatasetCommand,
+                                       createProfileCommand,
+                                       createProjectCommand,
+                                       createModelCommand };
 
     ClCommand createCommand("create", createCommands, "creates your stuff");
 
@@ -148,13 +148,13 @@ void clparser::parseArgs
     ClPosArg trainProjectPosArg("train-project", true);
     ClOption trainProjectOption(
         "model-project", { "p", "project" },
-        "Specify the project your model is located in.", { &trainProjectPosArg }
+        "Specify the project your model is located in.", { trainProjectPosArg }
         );
 
     ClPosArg trainModelPosArg("train-model", true);
     ClOption trainModelOption(
         "train-model", { "m", "model" }, "Specify the model you want to train.",
-        { &trainModelPosArg }
+        { trainModelPosArg }
         );
 
     ClOptionPtrList trainOptions = { &trainProjectOption, &trainModelOption };
@@ -170,7 +170,7 @@ void clparser::parseArgs
 
     ClPosArg listScopePosArg("list-model-scope");
     ClPosArg listframeworkPosArg("list-model-framework");
-    ClOption listModelsOption("list-models", {"s", "model-scope"}, "List the models of a scope (-f required).", { &listScopePosArg });
+    ClOption listModelsOption("list-models", {"s", "model-scope"}, "List the models of a scope (-f required).", { listScopePosArg });
 
     ClOption listFrameworksOption("list-framework", {"f", "frameworks"}, "List the frameworks.");
 
@@ -186,25 +186,25 @@ void clparser::parseArgs
     /*    ############################# DELETE COMMAND #############################    */
 
     ClPosArg deleteDatasetPosArg("delete-dataset");
-    ClOption deleteDatasetOption("delete-dataset", {"d", "dataset"}, "Delete a dataset.", { &deleteDatasetPosArg });
+    ClOption deleteDatasetOption("delete-dataset", {"d", "dataset"}, "Delete a dataset.", { deleteDatasetPosArg });
 
     ClPosArg deleteProfilePosArg("delete-profile");
-    ClOption deleteProfileOption("delete-profile", {"r", "profile"}, "Delete a profile.", { &deleteProfilePosArg });
+    ClOption deleteProfileOption("delete-profile", {"r", "profile"}, "Delete a profile.", { deleteProfilePosArg });
 
     ClPosArg deleteProjectPosArg("delete-project");
-    ClOption deleteProjectOption("delete-project", {"p", "project"}, "Delete a project.", { &deleteProjectPosArg });
+    ClOption deleteProjectOption("delete-project", {"p", "project"}, "Delete a project.", { deleteProjectPosArg });
 
     ClPosArg deleteModelPosArg("delete-model");
-    ClOption deleteModelOption("delete-model", {"m", "model"}, "Delete a model.", { &deleteModelPosArg });
+    ClOption deleteModelOption("delete-model", {"m", "model"}, "Delete a model.", { deleteModelPosArg });
 
     ClOption confirmationOption("confirm", {"y", "yes"}, "Continue without asking.");
 
     ClOptionPtrList deleteOptions = {
-        &deleteDatasetOption,
-        &deleteProfileOption,
-        &deleteProjectOption,
-        &deleteModelOption,
-        &confirmationOption
+        deleteDatasetOption,
+        deleteProfileOption,
+        deleteProjectOption,
+        deleteModelOption,
+        confirmationOption
     };
 
     ClCommand deleteCommand("delete", deleteOptions, "deletes stuff");
@@ -212,7 +212,7 @@ void clparser::parseArgs
 
     /*    ############################# PARSER #############################    */
 
-    ClParser parser({ &createCommand, &listCommand, &trainCommand, &deleteCommand });
+    ClParser parser({ createCommand, listCommand, trainCommand, deleteCommand });
     parser.addAppName("0.0.1");
     parser.addHelpOption();
 

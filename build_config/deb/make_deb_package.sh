@@ -2,10 +2,25 @@
 
 # Make sure to qmake and make it first.
 
-buildDir=$(realpath $1)
-sourceDir=$(realpath $2)
+buildDir=$1
+sourceDir=$2
 appName=$3
-packagePath=$(realpath $4)
+packagePath=$4
+
+realpath $buildDir 2> /dev/null
+if [ $? -eq 127 ]; then
+    $buildDir=$(realpath $1)
+fi
+
+realpath $sourceDir 2> /dev/null
+if [ $? -eq 127 ]; then
+    $sourceDir=$(realpath $2)
+fi
+
+realpath $packagePath 2> /dev/null
+if [ $? -eq 127 ]; then
+    $packagePath=$(realpath $4)
+fi
 
 if [[ -z $1 ]]; then
     echo "No arguments given: 1:buildDir not given, 2:sourceDir not given, 3:appName not given. 4:packagePath not required. exiting..."
@@ -29,19 +44,28 @@ destScriptPath="$packagePath/$appName/etc/$appName/scripts"
 destConfigPath="$packagePath/$appName/etc/$appName/config"
 buidConfigPath="$packagePath/$appName/DEBIAN"
 
-if [[ ! -d $destAppPath ]]; then
+if [[ ! -f $builtAppPath ]]; then
+    echo "App not yet built. exiting..."
+    exit 0
+fi
+
+if [[ ! -d  $destAppPath ]]; then
+    echo "creating " $destAppPath
     mkdir -p $destAppPath
 fi
 
-if [[ ! -d $destScriptPath ]]; then
+if [[ ! -d  $destScriptPath ]]; then
+    echo "creating " $destScriptPath
     mkdir -p $destScriptPath
 fi
 
-if [[ ! -d $destConfigPath ]]; then
+if [[ ! -d  $destConfigPath ]]; then
+    echo "creating " $destConfigPath
     mkdir -p $destConfigPath
 fi
 
-if [[ ! -d $buidConfigPath ]]; then
+if [[ ! -d  $buidConfigPath ]]; then
+    echo "creating " $buidConfigPath
     mkdir -p $buidConfigPath
 fi
 

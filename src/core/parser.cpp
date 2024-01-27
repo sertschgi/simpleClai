@@ -128,7 +128,7 @@ void clparser::parseArgs
         );
 
     ClCommand createModelCommand(
-        "model", { &modelNameOption, &modelProjectOption, &modelModelOption },
+        "model", { modelNameOption, modelProjectOption, modelModelOption },
         "creates a model"
         );
 
@@ -157,7 +157,7 @@ void clparser::parseArgs
         { trainModelPosArg }
         );
 
-    ClOptionPtrList trainOptions = { &trainProjectOption, &trainModelOption };
+    ClOptionPtrList trainOptions = { trainProjectOption, trainModelOption };
     ClCommand trainCommand("train", trainOptions, "trains your model");
 
     /*    ############################# LIST COMMAND #############################    */
@@ -175,11 +175,11 @@ void clparser::parseArgs
     ClOption listFrameworksOption("list-framework", {"f", "frameworks"}, "List the frameworks.");
 
     ClOptionPtrList listOptions = {
-        &listDatasetsOption,
-        &listProfilesOption,
-        &listProjectsOption,
-        &listModelsOption,
-        &listFrameworksOption
+        listDatasetsOption,
+        listProfilesOption,
+        listProjectsOption,
+        listModelsOption,
+        listFrameworksOption
     };
     ClCommand listCommand("list", listOptions, "lists stuff");
 

@@ -104,14 +104,14 @@ void dataset::deleteDataset
         throw error::existence::NoSuchDatasetError();
     }
 
+    qInfo() << "\033[32m[INFO]: Deleting dataset...\033[0m";
+
     tools::deleteFromObject(name, jsonDatasets, confirmationDialog);
 }
 
 void dataset::list()
 {
     const QJsonObject& jsonDatasets = tools::getJsonObject(USER_CONFIG_PATH "/datasets.json");
-
-    qInfo() << "\033[32m[INFO]: Deleting dataset...\033[0m";
 
     qInfo().noquote() << tools::list(jsonDatasets).toUtf8();
 }

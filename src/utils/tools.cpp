@@ -143,9 +143,9 @@ void tools::deleteFromObject
     bool confirmationDialog
     )
 {
-    if (object.contains(name))
+    if (!object.contains(name))
     {
-        throw error::name::DatasetNameError();
+        throw error::existence::NoSuchDatasetError();
     }
 
     QJsonObject thisDataset = object[name].toObject();
@@ -197,7 +197,7 @@ int tools::copyFilesWithExtention
 
     QStringList filters;
 
-    for (QString ext : extensions)
+    for (const QString& ext : extensions)
     {
         filters.append("*." + ext);
     }
@@ -227,7 +227,7 @@ int tools::copyFilesWithExtention
         }
         else
         {
-            qCritical() << "\033[33m[ERROR] <CRITICAL>: Failed to move file:\033[35m" << files[i] << "\033[0m";
+            qCritical() << "\033[33m[ERROR] <CRITICAL>: Failed to copy file:\033[35m" << files[i] << "\033[0m";
         }
     }
 
@@ -308,6 +308,7 @@ QString tools::installProcess
         return QString(output);
     }
     qFatal() << "\033[31m[ERROR] <FATAL>: Script errored! Count(" << errorCount << "):" << installationProcess.readAllStandardError() << "\033[0m";
+    return QString();
 }
 
 QString tools::interpretPath

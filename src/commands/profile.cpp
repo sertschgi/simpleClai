@@ -34,6 +34,8 @@ void profile::createProfile
         throw error::name::ProfileNameError();
     }
 
+    qDebug() << "\033[90m[DEBUG]: Framework is:" << framework << "\033[0m";
+
     const QJsonObject& jsonFrameworks = tools::getJsonObject(APP_CONFIG_PATH "/frameworks.json");
 
     if (!jsonFrameworks.contains(framework))

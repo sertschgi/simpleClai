@@ -171,7 +171,7 @@ void tools::deleteFromObject
     object.remove(name);
     tools::writeJson(USER_CONFIG_PATH "/datasets.json", object);
 
-    if (!QDir(datasetPath).rmpath(datasetPath))
+    if (!QDir(datasetPath).removeRecursively())
     {
         qFatal() << "\033[31m[ERROR] <FATAL>: Failed to remove directory!" << datasetPath << "\033[0m";
     }

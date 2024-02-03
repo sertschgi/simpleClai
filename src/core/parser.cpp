@@ -20,33 +20,6 @@ void clparser::parseArgs
     char *argv[]
     )
 {
-
-    // CREATE PROJECT
-
-    ClPosArg projectNamePosArg("project-name", true);
-    ClOption projectNameOption(
-        "project-name", { "n", "name" }, "Specify the name of your project.",
-        { projectNamePosArg }
-        );
-
-    ClPosArg projectProfilePosArg("project-profile", true);
-    ClOption projectProfileOption(
-        "project-profile", { "p", "profile" },
-        "Specify the profile you want to use for your project.", { projectProfilePosArg }
-        );
-
-    ClPosArg projectDatasetPosArg("project-dataset", true);
-    ClOption projectDatasetOption(
-        "project-dataset", { "d", "dataset" },
-        "Specify the dataset you want to use.", { projectDatasetPosArg }
-        );
-
-    ClCommand createProjectCommand(
-        "project",
-        { projectNameOption, projectProfileOption, projectDatasetOption },
-        "creates a project"
-        );
-
     /*    ############################# CREATE COMMAND #############################    */
 
     // CREATE DATASET
@@ -108,7 +81,31 @@ void clparser::parseArgs
         );
 
 
+    // CREATE PROJECT
 
+    ClPosArg projectNamePosArg("project-name", true);
+    ClOption projectNameOption(
+        "project-name", { "n", "name" }, "Specify the name of your project.",
+        { projectNamePosArg }
+        );
+
+    ClPosArg projectProfilePosArg("project-profile", true);
+    ClOption projectProfileOption(
+        "project-profile", { "p", "profile" },
+        "Specify the profile you want to use for your project.", { projectProfilePosArg }
+        );
+
+    ClPosArg projectDatasetPosArg("project-dataset", true);
+    ClOption projectDatasetOption(
+        "project-dataset", { "d", "dataset" },
+        "Specify the dataset you want to use.", { projectDatasetPosArg }
+        );
+
+    ClCommand createProjectCommand(
+        "project",
+        { projectNameOption, projectProfileOption, projectDatasetOption },
+        "creates a project"
+        );
 
 
     // CREATE MODEL

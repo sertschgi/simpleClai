@@ -9,7 +9,7 @@ void createDataset
     (
     const QString& name,
     const QString& labelmapPath,
-    const QString& imagesPath,
+    const QString& dataPath,
     const QString& labelsPath
     );
 void deleteDataset

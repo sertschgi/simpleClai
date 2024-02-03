@@ -101,7 +101,7 @@ void profile::createProfile
 
     jsonProfiles[name] = newProfile;
 
-    tools::writeJson(USER_CONFIG_PATH "profiles.json", jsonProfiles);
+    tools::writeJson(USER_CONFIG_PATH "/profiles.json", jsonProfiles);
 }
 
 void profile::deleteProfile

@@ -16,11 +16,11 @@
 
 void dataset::createDataset
     (
-        const QString& name,
-        const QString& labelmapPath,
-        const QString& imagesPath,
-        const QString& labelsPath
-        )
+    const QString& name,
+    const QString& labelmapPath,
+    const QString& dataPath,
+    const QString& labelsPath
+    )
 {
     using namespace::std;
 
@@ -56,7 +56,7 @@ void dataset::createDataset
 
     qInfo() << "\033[32m[INFO]: Your dataset will be stored in:\033[35m" << datasetPath << "\033[0m";
 
-    const QString newImagesPath = datasetPath + "/images";
+    const QString newDataPath = datasetPath + "/images";
     const QString newLabelsPath = datasetPath + "/labels";
 
     QSettings settings(APP_CONFIG_PATH "/config.ini", QSettings::IniFormat);
@@ -70,7 +70,7 @@ void dataset::createDataset
 
     QStringList img_formats = settings.value("dataset/supported_img_formats").toStringList();
 
-    if (tools::copyFilesWithExtention(imagesPath,newImagesPath,img_formats) == 0)
+    if (tools::copyFilesWithExtention(dataPath,newDataPath,img_formats) == 0)
     {
         throw error::compatibility::ImageExtentionError();
     }
@@ -80,7 +80,7 @@ void dataset::createDataset
     QFile::copy(labelmapPath, newLabelmapPath);
 
     newDataset["path"] = datasetPath;
-    newDataset["images"] = newImagesPath;
+    newDataset["data"] = newDataPath;
     newDataset["labels"] = newLabelsPath;
     newDataset["labelmap"] = newLabelmapPath;
 

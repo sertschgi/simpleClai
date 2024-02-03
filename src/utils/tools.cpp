@@ -317,21 +317,27 @@ QString tools::interpretPath
     QMap<QString, QString> replacements
     )
 {
-    QString fullPath = tools::getFullPath(path);
+    qDebug() << "\033[90m[DEBUG]: %{APP_SCRIPTS_PATH}: " << APP_SCRIPTS_PATH;
 
-    replacements.insert("%{APP_SCRIPTS_PATH}", APP_SCRIPTS_PATH);
-    // replacements.insert("%{APP_CONFIG_PATH}", APP_CONFIG_PATH);
-    // replacements.insert("%{USER_CONFIG_PATH}", USER_CONFIG_PATH);
-    replacements.insert("%{USER_SCRIPTS_PATH}", USER_SCRIPTS_PATH);
+    replacements.insert("%{APP_SCRIPTS_PATH}", tools::getFullPath(APP_SCRIPTS_PATH));
+    replacements.insert("%{APP_CONFIG_PATH}", tools::getFullPath(APP_CONFIG_PATH));
+    replacements.insert("%{USER_CONFIG_PATH}", tools::getFullPath(USER_CONFIG_PATH));
+    replacements.insert("%{USER_SCRIPTS_PATH}", tools::getFullPath(USER_SCRIPTS_PATH));
+    replacements.insert("%{DEFAULT_DATASETS_PATH}", tools::getFullPath(DEFAULT_DATASETS_PATH));
+    replacements.insert("%{DEFAULT_PROFILES_PATH}", tools::getFullPath(DEFAULT_PROFILES_PATH));
+    replacements.insert("%{DEFAULT_PROJECTS_PATH}", tools::getFullPath(DEFAULT_PROJECTS_PATH));
+    replacements.insert("%{DEFAULT_MODELS_PATH}", tools::getFullPath(DEFAULT_MODELS_PATH));
+    replacements.insert("%{APP_DATA_PATH}", tools::getFullPath(APP_DATA_PATH));
 
-    QString result = fullPath;
+
+    QString result = path;
 
     for (auto it = replacements.constBegin(); it != replacements.constEnd(); ++it)
     {
         result.replace(it.key(), it.value());
     }
 
-    return result;
+    return getFullPath(result);
 }
 
 const QString tools::list

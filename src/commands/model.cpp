@@ -31,13 +31,11 @@ void model::createModel
     }
 
     QJsonObject jsonProject = jsonProjects[project].toObject();
-
     QJsonObject jsonUserModels = jsonProject["models"].toObject();
 
-    if (jsonUserModels.contains(name))
-    {
+    if (jsonUserModels.contains(name) && ! jsonUserModels.isEmpty())
         throw error::name::ModelNameError();
-    }
+
 
     const QString& profile = jsonProject["profile"].toString();
     const QJsonObject& jsonProfiles = tools::getJsonObject(USER_CONFIG_PATH "/profiles.json");
@@ -72,8 +70,11 @@ void model::createModel
     newModel["path"] = modelPath;
     newModel["model"] = model;
 
-    jsonProjects[project].toObject()["models"].toObject()[name].toObject() = newModel;
-    tools::writeJson(USER_CONFIG_PATH "projects.json", jsonProjects);
+    jsonUserModels[name] = newModel;
+    jsonProject["models"] = jsonUserModels;
+    jsonProjects[project] = jsonProject;
+
+    tools::writeJson(USER_CONFIG_PATH "/projects.json", jsonProjects);
 }
 
 
@@ -84,6 +85,9 @@ void model::trainModel
     const QString& project
     )
 {
+    qDebug() << "\033[90m[DEBUG]: Name is:" << name << "\033[0m";
+    qDebug() << "\033[90m[DEBUG]: Project is:" << project << "\033[0m";
+
     QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
 
     if (!jsonProjects.contains(project))
@@ -92,13 +96,13 @@ void model::trainModel
     }
 
     QJsonObject jsonProject = jsonProjects[project].toObject();
+    QJsonObject jsonModels = jsonProject["models"].toObject();
 
-    if (!jsonProjects["models"].toObject().contains(name))
+    if (!jsonModels.contains(name))
     {
         throw error::existence::NoSuchModelError();
     }
 
-    const QJsonObject& jsonModels = jsonProjects["models"].toObject();
     const QJsonObject& jsonModel = jsonModels[name].toObject();
 
     const QString& profile = jsonProject["profile"].toString();

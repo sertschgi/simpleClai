@@ -68,13 +68,12 @@ void tools::writeJson
 
     QSaveFile jsonFile(fullPath);
 
-    QDir().mkpath(QFileInfo(filename).absolutePath());
+    tools::createPath(filename);
 
-    // qDebug() << "\033[90m[DEBUG]: Json file properties:" << jsonFile.fileName() << "\033[0m";
+    qDebug() << "\033[90m[DEBUG]: Json file properties:" << jsonObject << "\033[0m";
 
-    if (!jsonFile.open(QIODevice::WriteOnly)) {
+    if (!jsonFile.open(QIODevice::WriteOnly))
         qCritical() << "\033[33m[ERROR] <CRITICAL>: Could not create new File!:\033[35m" << fullPath << "\033[0m";
-    }
 
     QJsonDocument jsonDoc(jsonObject);
     jsonFile.write(jsonDoc.toJson());

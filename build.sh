@@ -18,7 +18,7 @@ fi
 
 sudo chmod +x build_config/deb/*.sh
 
-cmake build/release -D CMAKE_PREFIX_PATH=$qtFolder/$qtVersion/gcc_64/lib/cmake/Qt6
+cmake -B build/release -D CMAKE_PREFIX_PATH=$qtFolder/$qtVersion/gcc_64/lib/cmake/Qt6
 cmake --build 'build/release' --target all
 
 

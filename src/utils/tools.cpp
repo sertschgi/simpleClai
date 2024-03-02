@@ -68,7 +68,7 @@ void tools::writeJson
 
     QSaveFile jsonFile(fullPath);
 
-    tools::createPath(filename);
+    tools::createPath(QFileInfo(jsonFile).path());
 
     qDebug() << "\033[90m[DEBUG]: Json file properties:" << jsonObject << "\033[0m";
 

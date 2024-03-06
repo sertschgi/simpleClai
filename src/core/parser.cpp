@@ -158,7 +158,14 @@ void clparser::parseArgs
         { trainModelPosArg }
         );
 
-    ClOptionPtrList trainOptions = { trainProjectOption, trainModelOption };
+    ClPosArg trainArgsPosArg("train-args");
+    ClOption trainArgsOption(
+        "train-model", { "a", "args" }, "Specify special arguments needed for your scope.",
+        { trainArgsPosArg }
+        );
+
+
+    ClOptionPtrList trainOptions = { trainProjectOption, trainModelOption, trainArgsOption };
     ClCommand trainCommand("train", trainOptions, "trains your model");
 
     /*    ############################# LIST COMMAND #############################    */
@@ -184,38 +191,56 @@ void clparser::parseArgs
     };
     ClCommand listCommand("list", listOptions, "lists stuff");
 
+
     /*    ############################# DELETE COMMAND #############################    */
 
-    ClPosArg deleteDatasetPosArg("delete-dataset");
-    ClOption deleteDatasetOption("delete-dataset", {"d", "dataset"}, "Delete a dataset.", { deleteDatasetPosArg });
+    // DELETE DATASET
 
-    ClPosArg deleteProfilePosArg("delete-profile");
-    ClOption deleteProfileOption("delete-profile", {"r", "profile"}, "Delete a profile.", { deleteProfilePosArg });
+    ClCommand deleteDatasetCommand(
+        "dataset", { datasetNameOption }, "deletes a dataset"
+        );
 
-    ClPosArg deleteProjectPosArg("delete-project");
-    ClOption deleteProjectOption("delete-project", {"p", "project"}, "Delete a project.", { deleteProjectPosArg });
 
-    ClPosArg deleteModelPosArg("delete-model");
-    ClOption deleteModelOption("delete-model", {"m", "model"}, "Delete a model.", { deleteModelPosArg });
+    // DELETE PROFILE
+
+    ClCommand deleteProfileCommand(
+        "profile", { profileNameOption }, "deletes a profile"
+        );
+
+
+    // DELETE PROJECT
+
+    ClCommand deleteProjectCommand(
+        "project", { projectNameOption }, "deletes a project"
+        );
+
+
+    // DELETE MODEL
+
+    ClCommand deleteModelCommand(
+        "model", { modelNameOption, modelProjectOption }, "deletes a model"
+        );
+
 
     ClOption confirmationOption("confirm", {"y", "yes"}, "Continue without asking.");
 
-    ClOptionPtrList deleteOptions = {
-        deleteDatasetOption,
-        deleteProfileOption,
-        deleteProjectOption,
-        deleteModelOption,
-        confirmationOption
+    ClCommandPtrList deleteCommands = {
+        deleteDatasetCommand,
+        deleteProfileCommand,
+        deleteProjectCommand,
+        deleteModelCommand
     };
 
-    ClCommand deleteCommand("delete", deleteOptions, "deletes stuff");
+    ClCommand deleteCommand("delete", { confirmationOption }, deleteCommands, "deletes stuff");
 
 
     /*    ############################# PARSER #############################    */
 
     ClParser parser({ createCommand, listCommand, trainCommand, deleteCommand });
-    parser.addAppName("0.0.1");
+    parser.addAppName("sclai");
+    parser.addAppVersion("0.0.1");
     parser.addHelpOption();
+    parser.addVersionOption();
 
     parser.parse(argc, argv);
 
@@ -266,7 +291,7 @@ void clparser::parseArgs
     /*    ############################# TRAIN HANDLING #############################    */
 
     if (trainCommand.isSet())
-        model::trainModel(QString(trainProjectPosArg.cvalue()), QString(trainModelPosArg.cvalue()));
+        model::trainModel(QString(trainModelPosArg.cvalue()), QString(trainProjectPosArg.cvalue()), QString(trainArgsPosArg.cvalue()));
 
 
     /*    ############################# LIST HANDLING #############################    */
@@ -289,17 +314,19 @@ void clparser::parseArgs
 
     /*    ############################# DELETION HANDLING #############################    */
 
-    if (deleteDatasetOption.isSet())
-        dataset::deleteDataset(QString(deleteDatasetPosArg.cvalue()), confirmationOption.isSet());
+    if (deleteDatasetCommand.isSet())
+        dataset::deleteDataset(QString(datasetNamePosArg.cvalue()), confirmationOption.isSet());
 
-    if (deleteProfileOption.isSet())
-        dataset::deleteDataset(QString(deleteProfilePosArg.cvalue()), confirmationOption.isSet());
+    if (deleteProfileCommand.isSet())
+        profile::deleteProfile(QString(profileNamePosArg.cvalue()), confirmationOption.isSet());
 
-    if (deleteProjectOption.isSet())
-        dataset::deleteDataset(QString(deleteProjectPosArg.cvalue()), confirmationOption.isSet());
+    if (deleteProjectCommand.isSet())
+        project::deleteProject(QString(projectNamePosArg.cvalue()), confirmationOption.isSet());
 
-    if (deleteModelOption.isSet())
-        dataset::deleteDataset(QString(deleteModelPosArg.cvalue()), confirmationOption.isSet());
+    if (deleteModelCommand.isSet())
+        model::deleteModel(QString(modelNamePosArg.cvalue()), QString(modelProjectPosArg.cvalue()), confirmationOption.isSet());
+
+
 }
 
 

@@ -20,7 +20,8 @@ void createModel
 void trainModel
     (
     const QString& name,
-    const QString& project
+    const QString& project,
+    const QString& args
     );
 
 void deleteModel

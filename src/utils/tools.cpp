@@ -253,7 +253,7 @@ QString tools::installProcess
     QString terminal = "/bin/bash";
 
     QStringList arguments;
-    arguments << "-i" << "-c" << "source " + script;
+    arguments << "-ic" << script;
 
     qDebug() << "\033[90m[DEBUG]: Using arguments:" << arguments << "\033[0m";
 
@@ -306,7 +306,7 @@ QString tools::installProcess
         QByteArray output = installationProcess.readAllStandardOutput();
         return QString(output);
     }
-    qFatal() << "\033[31m[ERROR] <FATAL>: Script errored! Count(" << errorCount << "):" << installationProcess.readAllStandardError() << "\033[0m";
+    qFatal() << "\033[31m[ERROR] <FATAL>: Script errored! Count:" << errorCount << "\n Errors: " << installationProcess.readAllStandardError() << "\033[0m";
     return QString();
 }
 

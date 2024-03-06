@@ -75,9 +75,9 @@ void dataset::createDataset
         throw error::compatibility::ImageExtentionError();
     }
 
-    const QString& newLabelmapPath = datasetPath + "/annotations/labelmap.pbtxt";
+    const QString& newLabelmapPath = datasetPath + "/annotations/label_map.pbtxt";
 
-    QFile::copy(labelmapPath, newLabelmapPath);
+    QFile::copy(tools::getFullPath(labelmapPath), tools::getFullPath(newLabelmapPath));
 
     newDataset["path"] = datasetPath;
     newDataset["data"] = newDataPath;

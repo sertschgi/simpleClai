@@ -23,6 +23,8 @@ void model::createModel
 {
     using namespace::std;
 
+    qDebug() << "creating model...";
+
     QJsonObject jsonProjects = tools::getJsonObject(USER_CONFIG_PATH "/projects.json");
 
     if (!jsonProjects.contains(project))
@@ -52,13 +54,17 @@ void model::createModel
     {
         throw error::existence::NoSuchModelError();
     }
-    
+
     const QJsonObject& jsonModel = jsonModels[model].toObject();
 
-    const QString& modelPath = DEFAULT_MODELS_PATH "/" + name;
+    const QString& projectPath = jsonProject["path"].toString();
 
     QMap<QString, QString> replacements;
     replacements.insert("%{NAME}", name);
+    replacements.insert("%{PROJECT_PATH}", projectPath);
+
+    const QString& modelPath = tools::interpretPath(DEFAULT_MODELS_PATH, replacements) + "/" + name;
+
     replacements.insert("%{MODEL_PATH}", modelPath);
 
     const QString& script = tools::interpretPath(jsonModel["install_script"].toString(), replacements);
@@ -82,7 +88,8 @@ void model::createModel
 void model::trainModel
     (
     const QString& name,
-    const QString& project
+    const QString& project,
+    const QString& args
     )
 {
     qDebug() << "\033[90m[DEBUG]: Name is:" << name << "\033[0m";
@@ -141,8 +148,12 @@ void model::trainModel
     QMap<QString, QString> replacements;
     replacements.insert("%{NAME}", name);
     replacements.insert("%{MODEL_PATH}", jsonModel["path"].toString());
+    replacements.insert("%{PROJECT_PATH}", jsonProject["path"].toString());
+    replacements.insert("%{PROFILE_PATH}", jsonProfile["path"].toString());
+    replacements.insert("%{VENV_PATH}", jsonProfile["venv_path"].toString());
+    replacements.insert("%{ARGS}", args);
 
-    const QString& script = tools::interpretPath(jsonScope["training_script"].toString());
+    const QString& script = tools::interpretPath(jsonScope["training_script"].toString(), replacements);
 
     qDebug() << "\033[32m[INFO]: Training finished with output: " << tools::installProcess(script) << "\033[0m";
 }

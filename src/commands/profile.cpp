@@ -84,20 +84,20 @@ void profile::createProfile
     replacements.insert("%{NAME}", name);
     replacements.insert("%{PROFILE_PATH}", thisProfilePath);
 
-    const QString& pythonPath = tools::interpretPath(jsonScopes["python_path"].toString(), replacements);
+    const QString& venvPath = tools::interpretPath(jsonScope["venv_path"].toString(), replacements);
 
     QJsonObject newProfile;
 
     newProfile["scope"] = scope;
     newProfile["framework"] = framework;
-    newProfile["profile_path"] = thisProfilePath;
-    newProfile["python_path"] = pythonPath;
+    newProfile["path"] = thisProfilePath;
+    newProfile["venv_path"] = venvPath;
 
     const QJsonObject& jsonProfile = jsonScope["profile"].toObject();
 
     const QString& script = tools::interpretPath(jsonProfile["install_script"].toString(), replacements);
 
-    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script, QStringList() << QString("PROFILE_PATH=") + profilePath) << "\033[0m";
+    qDebug() << "\033[32m[INFO]: Install Finished with output: " << tools::installProcess(script, QStringList() << QString("PROFILES_PATH=") + profilePath) << "\033[0m";
 
     jsonProfiles[name] = newProfile;
 

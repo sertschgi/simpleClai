@@ -48,13 +48,22 @@ void project::createProject
         throw error::existence::NoSuchDatasetError();
     }
 
-    const QString& projectPath = DEFAULT_PROJECTS_PATH "/" + name;
+    const QJsonObject& jsonDataset = jsonDatasets[dataset].toObject();
+
+    const QString& profilePath = jsonProfile["path"].toString();
+    const QString& datasetPath = jsonDataset["path"].toString();
+
+    QMap<QString, QString> replacements;
+    replacements.insert("%{NAME}", name);
+    replacements.insert("%{PROFILE_PATH}", profilePath);
+
+    const QString& projectPath = tools::interpretPath(DEFAULT_PROJECTS_PATH, replacements) + "/" + name;
 
     QJsonObject newProject;
 
     newProject["profile"] = profile;
     newProject["dataset"] = dataset;
-    newProject["project_path"] = projectPath;
+    newProject["path"] = tools::getFullPath(projectPath);
 
     const QString& framework = jsonProfile["framework"].toString();
     const QString& scope = jsonProfile["scope"].toString();
@@ -62,9 +71,12 @@ void project::createProject
     const QJsonObject& jsonFrameworks = tools::getJsonObject(APP_CONFIG_PATH "/frameworks.json");
     const QJsonObject& jsonProject = jsonFrameworks[framework][scope]["project"].toObject();
 
-    QMap<QString, QString> replacements;
-    replacements.insert("%{NAME}", name);
     replacements.insert("%{PROJECT_PATH}", projectPath);
+
+    const QString& venvPath = jsonProfile["venv_path"].toString();
+
+    replacements.insert("%{VENV_PATH}", venvPath);
+    replacements.insert("%{DATASET_PATH}", datasetPath);
 
     const QString& script = tools::interpretPath(jsonProject["install_script"].toString(), replacements);
 

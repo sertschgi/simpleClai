@@ -1,17 +1,20 @@
 {
     "tensorflow" : {
         "object_detection" : {
-            "python_path" : "%{PROFILE_PATH}/sa_%{NAME}/python",
-            "training_script" : "%{APP_SCRIPTS_PATH}/train_tf_object_detection.sh %{NAME}",
+            "venv_path" : "%{PROFILE_PATH}/api/sa_%{NAME}",
+            "training_script" : "%{APP_SCRIPTS_PATH}/train_tf_object_detection.sh %{MODEL_PATH} %{PROJECT_PATH} %{PROFILE_PATH} %{VENV_PATH} %{APP_SCRIPTS_PATH} %{ARGS}",
             "profile" : {
                 "install_script" : "%{APP_SCRIPTS_PATH}/install_tf_object_detection.sh %{NAME}"
             },
             "project" : {
-                "install_script" : "%{APP_SCRIPTS_PATH}/setup_tf_object_detection_project.sh %{NAME} %{PROFILE_PATH}"
+                "install_script" : "%{APP_SCRIPTS_PATH}/setup_tf_object_detection_project.sh %{PROJECT_PATH} %{DATASET_PATH} %{PROFILE_PATH} %{VENV_PATH} %{APP_SCRIPTS_PATH}"
             },
             "models" : {
                 "CenterNet MobileNetV2 FPN" : {
                     "install_script" : "%{APP_SCRIPTS_PATH}/setup_tf_object_detection_model.sh %{NAME} %{MODEL_PATH} http://download.tensorflow.org/models/object_detection/tf2/20210210/centernet_mobilenetv2fpn_512x512_coco17_od.tar.gz"
+                },
+                "SSD MobileNetV2" : {
+                    "install_script" : "%{APP_SCRIPTS_PATH}/setup_tf_object_detection_model.sh %{NAME} %{MODEL_PATH} http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8.tar.gz"
                 }
             }
         }

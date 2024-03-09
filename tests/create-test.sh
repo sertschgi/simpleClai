@@ -68,7 +68,7 @@ echo "--------------------| starting test 4 |--------------------"
 
 fullModelName="test-model$dtTestVersion"
 
-if sclai create model -n $fullModelName -p $fullPjName -m "CenterNet MobileNetV2 FPN"
+if sclai create model -n $fullModelName -p $fullPjName -m "SSD MobileNetV2"
 then
     echo -e "Created model succesfully! -> \033[32mtest 4 successful\033[0m"
     test4="\033[32msucceded\033[0m"

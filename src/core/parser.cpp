@@ -30,12 +30,6 @@ void clparser::parseArgs
         { datasetNamePosArg }
         );
 
-    ClPosArg datasetLabelPosArg("dataset-label", true);
-    ClOption datasetLabelOption(
-        "dataset-label", { "l", "labels" },
-        "Specify the path of your labelmap.pbtxt", { datasetLabelPosArg }
-        );
-
     ClPosArg datsetLabelPathPosArg("dataset-label-path", true);
     ClOption datsetLabelPathOption(
         "dataset-label-path", { "a", "labels_path" }, "Specify the label path.",
@@ -49,8 +43,7 @@ void clparser::parseArgs
         );
 
     ClCommand createDatasetCommand(
-        "dataset", { datasetNameOption, datasetLabelOption,
-         datsetLabelPathOption, datasetImagePathOption }, "creates a dataset"
+        "dataset", { datasetNameOption, datsetLabelPathOption, datasetImagePathOption }, "creates a dataset"
         );
 
 
@@ -252,7 +245,6 @@ void clparser::parseArgs
     if (createDatasetCommand.isSet())
         dataset::createDataset(
             QString(datasetNamePosArg.cvalue()),
-            QString(datasetLabelPosArg.cvalue()),
             QString(datsetLabelPathPosArg.cvalue()),
             QString(datasetImagePathPosArg.cvalue())
             );

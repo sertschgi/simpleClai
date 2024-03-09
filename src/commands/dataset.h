@@ -8,7 +8,6 @@ namespace dataset
 void createDataset
     (
     const QString& name,
-    const QString& labelmapPath,
     const QString& dataPath,
     const QString& labelsPath
     );

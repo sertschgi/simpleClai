@@ -17,7 +17,6 @@
 void dataset::createDataset
     (
     const QString& name,
-    const QString& labelmapPath,
     const QString& dataPath,
     const QString& labelsPath
     )
@@ -75,15 +74,10 @@ void dataset::createDataset
         throw error::compatibility::ImageExtentionError();
     }
 
-    const QString& newLabelmapPath = datasetPath + "/annotations/label_map.pbtxt";
-
-    QFile::copy(tools::getFullPath(labelmapPath), tools::getFullPath(newLabelmapPath));
-
     newDataset["path"] = datasetPath;
     newDataset["data"] = newDataPath;
     newDataset["labels"] = newLabelsPath;
-    newDataset["labelmap"] = newLabelmapPath;
-
+    
     jsonDatasets[name] = newDataset;
 
     tools::writeJson(USER_CONFIG_PATH "/datasets.json", jsonDatasets);
